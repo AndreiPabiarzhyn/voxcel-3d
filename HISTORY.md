@@ -1369,3 +1369,38 @@ be red/brown/etc."
 `npm run build` / `npm run lint` clean. Not visually verified by me —
 please confirm the mesh of lines is gone and the color hint reads
 clearly again without feeling solid/in-the-way.
+
+## 2026-07-25 — .glb export colors weren't surviving import into Roblox
+
+Andrei reported that after downloading a build as .glb and importing it
+into Roblox, all the color information was gone (flat white/grey model).
+
+The export code (`exportModel.ts`) set each material's `color` property
+(glTF's `baseColorFactor`) directly and attached no texture. That's
+perfectly valid, spec-compliant glTF — Blender, three.js, and most
+proper PBR viewers read `baseColorFactor` correctly — but Roblox's mesh
+importer (and a number of other simplified glTF consumers) reads a
+material's base color *texture*, not the numeric factor. With no texture
+present, there's nothing for it to sample, hence flat white.
+
+Fixed by baking each distinct voxel color into a tiny (8x8) solid-color
+canvas texture and assigning it as the material's `map`, leaving `color`
+at its default white (so `factor(white) × texture(realColor) = realColor`
+— unchanged, correct behavior for tools that *do* respect
+`baseColorFactor`, while now also giving texture-only importers like
+Roblox an actual pixel to read). Textures get disposed alongside their
+materials after the export completes, same as before.
+
+Not able to verify this myself end-to-end (no Roblox Studio access here)
+— please re-export a build and confirm the colors now come through on
+import. `npm run build` / `npm run lint` clean.
+
+---
+
+Also this session: the GitHub Pages deploy for the previous commit got
+stuck in `in_progress` for 8+ minutes on the `deploy-pages` step alone
+(build itself finished in 17s) — looked like a one-off GitHub-side
+hiccup, not a project issue. Cancelled it (`gh run cancel`) and
+re-triggered a fresh deploy via `gh workflow run deploy.yml`
+(`workflow_dispatch`, already wired up in `deploy.yml`), which completed
+normally on the retry.
