@@ -23,7 +23,18 @@ const PAN_RANGE = 10
  * well-tested two-finger touch pan still works on tablets, just without
  * our drift clamp (the "reset view" button is the safety net there).
  */
-export function CameraRig() {
+interface CameraRigProps {
+  /** World-space x/z of the grid's visual middle — see the comment in
+   * Scene.tsx. The initial OrbitControls target is set here imperatively
+   * (once, before "home" is captured) rather than via a `target` prop on
+   * `<OrbitControls>`, since that prop would need a stable array
+   * reference to avoid re-snapping the target back on every re-render —
+   * simpler to just set it once and let the custom pan/orbit logic own
+   * `controls.target` from then on. */
+  center: number
+}
+
+export function CameraRig({ center }: CameraRigProps) {
   const controlsRef = useRef<OrbitControlsImpl>(null)
   const { camera, gl } = useThree()
 
@@ -31,6 +42,9 @@ export function CameraRig() {
     const dom = gl.domElement
     const controls = controlsRef.current
     if (!controls) return
+
+    controls.target.set(center, 0, center)
+    controls.update()
 
     registerCamera(camera, controls)
     registerCanvas(dom)
@@ -110,7 +124,7 @@ export function CameraRig() {
       dom.removeEventListener('pointercancel', stopDragging)
       dom.removeEventListener('contextmenu', onContextMenu)
     }
-  }, [camera, gl])
+  }, [camera, gl, center])
 
   return (
     <OrbitControls

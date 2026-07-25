@@ -2,6 +2,7 @@ import { useRef, useState, type ChangeEvent } from 'react'
 import { ConfirmDialog } from '../../components/ConfirmDialog'
 import { Tooltip } from '../../components/Tooltip'
 import { useChallengeStore } from '../challenges/challengeStore'
+import { downloadProjectFile } from '../../lib/storage/exportProjectFile'
 import { exportVoxelsAsGlb } from '../../lib/voxel/exportModel'
 import { useToastStore } from '../../lib/toast/toastStore'
 import { captureScreenshot } from '../../scene/screenshotController'
@@ -23,16 +24,7 @@ function handleScreenshot() {
 }
 
 function handleExportProject() {
-  const project = useProjectStore.getState().toProject()
-  const blob = new Blob([JSON.stringify(project, null, 2)], {
-    type: 'application/json',
-  })
-  const url = URL.createObjectURL(blob)
-  const link = document.createElement('a')
-  link.href = url
-  link.download = `${project.name || 'voxcel-project'}.voxcel`
-  link.click()
-  URL.revokeObjectURL(url)
+  downloadProjectFile(useProjectStore.getState().toProject())
   useToastStore.getState().show('Проект сохранён в файл 💾', 'success')
 }
 

@@ -1,3 +1,7 @@
+import { useState } from 'react'
+import { ConfirmDialog } from '../../components/ConfirmDialog'
+import { downloadProjectFile } from '../../lib/storage/exportProjectFile'
+import { useToastStore } from '../../lib/toast/toastStore'
 import { useProjectStore } from '../../store/projectStore'
 import { CloseIcon, CompletedIcon } from '../editor/icons'
 import { CHALLENGES } from './challengeData'
@@ -13,8 +17,24 @@ export function ChallengePanel() {
   const exitChallenge = useChallengeStore((state) => state.exitChallenge)
   const closePanel = useChallengeStore((state) => state.closePanel)
   const voxels = useProjectStore((state) => state.voxels)
+  const [pendingChallengeId, setPendingChallengeId] = useState<string | null>(null)
 
   if (!panelOpen) return null
+
+  const hasVoxels = Object.keys(voxels).length > 0
+
+  function beginChallenge(id: string) {
+    useProjectStore.getState().clearVoxels()
+    startChallenge(id)
+  }
+
+  function handleStart(id: string) {
+    if (hasVoxels) {
+      setPendingChallengeId(id)
+    } else {
+      beginChallenge(id)
+    }
+  }
 
   return (
     <div className="modal-backdrop" onClick={closePanel}>
@@ -71,7 +91,7 @@ export function ChallengePanel() {
                 <button
                   type="button"
                   className="btn-pill challenge-card__action"
-                  onClick={() => startChallenge(challenge.id)}
+                  onClick={() => handleStart(challenge.id)}
                 >
                   {active ? 'Играю' : completed ? 'Ещё раз' : 'Начать'}
                 </button>
@@ -91,6 +111,25 @@ export function ChallengePanel() {
           Свободный режим (без задания)
         </button>
       </div>
+
+      {pendingChallengeId && (
+        <ConfirmDialog
+          title="Сохранить текущую постройку?"
+          message="Задание начинается с чистой сетки — то, что уже построено, будет стёрто. Сохранить постройку в файл перед началом?"
+          confirmLabel="Не сохранять"
+          cancelLabel="Сохранить и начать"
+          onConfirm={() => {
+            beginChallenge(pendingChallengeId)
+            setPendingChallengeId(null)
+          }}
+          onCancel={() => {
+            downloadProjectFile(useProjectStore.getState().toProject())
+            useToastStore.getState().show('Проект сохранён в файл 💾', 'success')
+            beginChallenge(pendingChallengeId)
+            setPendingChallengeId(null)
+          }}
+        />
+      )}
     </div>
   )
 }

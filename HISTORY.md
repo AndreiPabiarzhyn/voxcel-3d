@@ -1234,3 +1234,88 @@ needs more room.
   `localStorage` for the site in devtools) to see the actual first-visit
   experience. Not visually verified by me for the same reason — no
   browser tool here, and no way to simulate "empty localStorage" myself.
+
+## 2026-07-25 — camera centered on the grid, challenge start now asks to save, better house + Among Us build
+
+Andrei shared a screenshot of the default camera framing he liked and
+said the pig was hard to find in it — plus asked for three more things:
+a save-prompt before a challenge wipes the grid, a proper house (the old
+one was just a flat two-tone box), and swapping the mushroom challenge
+for an Among Us crewmate.
+
+**Root-caused the camera issue, not just nudged numbers.** Voxels render
+at world position = their raw index (`Voxel.tsx`: `position={[x,y,z]}`,
+no centering offset), so the grid's visual middle — where `GroundPlane`/
+`GroundGrid` already center themselves via `(size-1)/2`, and where the
+starter pig sits — is *not* the world origin. But `Canvas`'s camera had
+no explicit OrbitControls `target`, so it defaulted to looking at
+`(0,0,0)` — a corner of the grid, not its middle. That's exactly why the
+pig felt hard to catch: the camera's pivot point was the wrong spot.
+- Fix, in `Scene.tsx` + `CameraRig.tsx`: compute `center = (gridSize-1)/2`
+  once, shift the Canvas's initial camera position by that same amount
+  (`[center+10, 9, center+10]` instead of the hardcoded `[10,9,10]`), and
+  set `controls.target.set(center, 0, center)` imperatively in
+  `CameraRig`'s mount effect — *before* `registerCamera` captures the
+  "home" position/target, so the Home view preset also inherits the fix.
+  Deliberately did **not** pass `target` as a live prop on
+  `<OrbitControls>`: drei re-syncs that prop via effect dependency on the
+  array reference, and an inline `[center, 0, center]` array is a new
+  reference every render — meaning the target would snap back to center
+  on every state change (e.g. every single voxel placed), fighting the
+  custom pan/orbit logic. Setting it once imperatively avoids that
+  entirely. Net result: identical camera angle/zoom to before (same
+  relative offset), just re-centered on the grid's middle instead of a
+  corner — so the pig (and anything else built near the middle) sits in
+  frame by default, consistently on every fresh load.
+
+**Challenge start now offers a save prompt.** `startChallenge` didn't
+touch the grid before — a challenge's target was just overlaid as a
+ghost on top of whatever was already there. Andrei wants challenges to
+start from a clean grid, but asked for a save-or-not question first.
+`ChallengePanel.tsx`: clicking "Начать"/"Ещё раз" now checks if the grid
+has anything on it; if so, a `ConfirmDialog` asks whether to save first
+(reusing the exact `.voxcel` download logic from `FileMenu`, pulled out
+into a shared `lib/storage/exportProjectFile.ts` so it isn't duplicated
+a third time) — either choice then clears the grid and starts the
+challenge. Swapped which button gets which style from the usual
+confirm/cancel default: "Сохранить и начать" is the safe ghost-styled
+button (and what a stray backdrop click falls back to), "Не сохранять"
+gets the red/danger styling, since discarding unsaved work is the
+actually-risky path here.
+- Caught a real bug while wiring this up: `ConfirmDialog` is portalled
+  to `document.body`, and React re-fires portalled events along the
+  *React* tree, not the DOM tree — so a click on this new dialog's own
+  backdrop would keep bubbling into `ChallengePanel`'s own
+  backdrop-click-to-close handler (the first time a `ConfirmDialog` has
+  ever been nested inside another click-handling backdrop). Fixed by
+  calling `stopPropagation()` on `ConfirmDialog`'s own backdrop click
+  before invoking `onCancel` — makes it fully self-contained for any
+  future nesting too, not just this one call site.
+
+**Proper house.** The old one was a 3x3 box for two layers plus a
+solid-color "roof" layer — no pitch, no door, no windows, barely reads
+as a house. New `buildHouse()`: 5x5 walls (3 tall), a roof that steps in
+to a 3x3 layer then a single-cube peak, a real 1-wide 2-tall doorway (an
+actual gap in the target — cells simply omitted, not just recolored —
+with the lintel row above staying filled), and a window on each side
+wall. Added a small `box()` helper alongside the existing `square()` one
+for stamping a color across a range of y-layers instead of just one.
+
+**Among Us instead of the mushroom.** `buildAmongUs()`: a tapered
+stack of square layers (3→5→5→5→5→3) approximating the bean-shaped body,
+a light-blue visor band across the upper-front face, and a small
+backpack bump on the back — same "silhouette over surface detail"
+principle as the pig's snout and the house's door, since a single
+flat-colored voxel can't render a 2D texture. For the challenge-card
+badge icon, there's no official "Among Us" emoji to source (it's a
+specific trademarked character design, not a Unicode symbol) — used the
+Twemoji astronaut instead (verified real asset, thematically the closest
+fit: Among Us characters are essentially cartoon spaceship crewmates)
+rather than fabricating a bespoke icon, per [[design-approach]].
+Old `mushroom.svg` deleted; new `amongus.svg` added under
+`public/icons/challenges/`.
+- `npm run build` / `npm run lint` clean. Camera fix, house, and Among Us
+  build are **not visually verified by me** — no browser tool here.
+  Please check the default view now frames the pig/grid center properly,
+  and that the new house/Among Us target shapes actually read as
+  intended in the 3D view.

@@ -10,11 +10,20 @@ import { VoxelGrid } from './VoxelGrid'
 
 export function Scene() {
   const gridSize = useProjectStore((state) => state.gridSize)
+  // Voxels render at world position = their index (Voxel.tsx), so the
+  // grid's visual middle — where GroundPlane/GroundGrid already center
+  // themselves, and where the starter pig sits — is (gridSize-1)/2, not
+  // the world origin. The camera used to default to looking at (0,0,0),
+  // a corner of the grid, which is exactly why the pig was hard to find:
+  // shifting both the camera's start position and its look-at target by
+  // the same offset keeps the identical angle/zoom, just re-centered on
+  // the grid's middle instead of its corner.
+  const center = (gridSize - 1) / 2
 
   return (
     <Canvas
       shadows
-      camera={{ position: [10, 9, 10], fov: 45 }}
+      camera={{ position: [center + 10, 9, center + 10], fov: 45 }}
       // Needed so the PNG screenshot button can read back the canvas —
       // without it the browser is free to clear the drawing buffer right
       // after presenting a frame, and the capture can come out blank.
@@ -35,7 +44,7 @@ export function Scene() {
       </Bvh>
       <GroundGrid size={gridSize} />
       <ChallengeGhost />
-      <CameraRig />
+      <CameraRig center={center} />
     </Canvas>
   )
 }

@@ -30,14 +30,41 @@ function square(
   }
 }
 
+// Same idea as `square` but stamped across a range of y layers at once —
+// used for the house's walls and the crewmate's body segments.
+function box(
+  target: Record<VoxelKey, VoxelData>,
+  y0: number,
+  y1: number,
+  size: number,
+  color: string,
+  center: number,
+) {
+  for (let y = y0; y <= y1; y++) {
+    square(target, y, size, color, center)
+  }
+}
+
 function buildHouse(): Record<VoxelKey, VoxelData> {
   const target: Record<VoxelKey, VoxelData> = {}
-  const wall = '#8a5a44'
-  const roof = '#ff5c5c'
-  const center = OFFSET + 1
-  square(target, 0, 3, wall, center)
-  square(target, 1, 3, wall, center)
-  square(target, 2, 3, roof, center)
+  const wall = '#c9915f'
+  const roof = '#b23b3b'
+  const glass = '#8ecfe0'
+  const center = OFFSET + 2
+
+  box(target, 0, 2, 5, wall, center) // walls, 5x5, 3 tall
+  square(target, 3, 3, roof, center) // roof, stepping in...
+  square(target, 4, 1, roof, center) // ...to a single peak
+
+  // Door: a 1-wide, 2-tall gap in the front wall (a real opening, not a
+  // recolored cell) — the lintel row above (y=2) stays filled.
+  delete target[voxelKey(center, 0, center + 2)]
+  delete target[voxelKey(center, 1, center + 2)]
+
+  // A window on each side wall, at eye height.
+  target[voxelKey(center - 2, 1, center)] = { color: glass }
+  target[voxelKey(center + 2, 1, center)] = { color: glass }
+
   return target
 }
 
@@ -53,15 +80,31 @@ function buildTree(): Record<VoxelKey, VoxelData> {
   return target
 }
 
-function buildMushroom(): Record<VoxelKey, VoxelData> {
+function buildAmongUs(): Record<VoxelKey, VoxelData> {
   const target: Record<VoxelKey, VoxelData> = {}
-  const stem = '#f4f4f4'
-  const cap = '#ff5c5c'
+  const body = '#e74c3c'
+  const visor = '#5cd6ff'
   const center = OFFSET + 2
-  target[voxelKey(center, 0, center)] = { color: stem }
-  target[voxelKey(center, 1, center)] = { color: stem }
-  square(target, 2, 5, cap, center)
-  square(target, 3, 3, cap, center)
+
+  // The bean-shaped body: narrow base, wide torso, narrow rounded top.
+  square(target, 0, 3, body, center)
+  square(target, 1, 5, body, center)
+  square(target, 2, 5, body, center)
+  square(target, 3, 5, body, center)
+  square(target, 4, 5, body, center)
+  square(target, 5, 3, body, center)
+
+  // Visor band across the upper-front face.
+  for (let dx = -2; dx <= 2; dx++) {
+    target[voxelKey(center + dx, 4, center + 2)] = { color: visor }
+  }
+
+  // Backpack bump on the back.
+  for (let dx = -1; dx <= 1; dx++) {
+    target[voxelKey(center + dx, 2, center - 3)] = { color: body }
+    target[voxelKey(center + dx, 3, center - 3)] = { color: body }
+  }
+
   return target
 }
 
@@ -75,7 +118,7 @@ export const CHALLENGES: Challenge[] = [
   {
     id: 'house',
     title: 'Домик',
-    hint: 'Собери маленький домик с крышей',
+    hint: 'Собери домик с дверью, окнами и крышей',
     icon: `${ICON_BASE}house.svg`,
     accent: 'gold',
     target: buildHouse(),
@@ -89,11 +132,11 @@ export const CHALLENGES: Challenge[] = [
     target: buildTree(),
   },
   {
-    id: 'mushroom',
-    title: 'Гриб',
-    hint: 'Собери гриб с красной шляпкой',
-    icon: `${ICON_BASE}mushroom.svg`,
+    id: 'amongus',
+    title: 'Амогус',
+    hint: 'Собери персонажа из Among Us',
+    icon: `${ICON_BASE}amongus.svg`,
     accent: 'coral',
-    target: buildMushroom(),
+    target: buildAmongUs(),
   },
 ]
