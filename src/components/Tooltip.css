@@ -1,0 +1,21 @@
+.tooltip-anchor {
+  display: inline-flex;
+}
+
+.tooltip-bubble {
+  position: fixed;
+  transform: translateX(-50%);
+  z-index: 50;
+  background: var(--surface-raised);
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 14px;
+  max-width: 220px;
+  text-align: center;
+  box-shadow: var(--shadow-float);
+  pointer-events: none;
+}

@@ -1,5 +1,6 @@
 import { useRef, useState, type ChangeEvent } from 'react'
 import { ConfirmDialog } from '../../components/ConfirmDialog'
+import { Tooltip } from '../../components/Tooltip'
 import { useChallengeStore } from '../challenges/challengeStore'
 import { exportVoxelsAsGlb } from '../../lib/voxel/exportModel'
 import { useToastStore } from '../../lib/toast/toastStore'
@@ -76,55 +77,60 @@ export function FileMenu() {
 
   return (
     <div className="file-menu hud-panel">
-      <button
-        type="button"
-        className="hud-button"
-        onClick={() => setConfirmingNew(true)}
-        aria-label="Начать новый проект"
-        title="Начать новый проект (стереть текущую постройку)"
-      >
-        <NewProjectIcon size={20} />
-      </button>
+      <Tooltip label="Начать новый проект (стереть текущую постройку)">
+        <button
+          type="button"
+          className="hud-button"
+          onClick={() => setConfirmingNew(true)}
+          aria-label="Начать новый проект"
+        >
+          <NewProjectIcon size={20} />
+        </button>
+      </Tooltip>
       <div className="hud-divider" />
-      <button
-        type="button"
-        className="hud-button"
-        onClick={handleExportProject}
-        aria-label="Сохранить проект в файл"
-        title="Сохранить проект (.voxcel)"
-      >
-        <DownloadIcon size={20} />
-      </button>
-      <button
-        type="button"
-        className="hud-button"
-        onClick={() => fileInputRef.current?.click()}
-        aria-label="Открыть проект из файла"
-        title="Открыть проект (.voxcel)"
-      >
-        <FolderIcon size={20} />
-      </button>
+      <Tooltip label="Сохранить проект (.voxcel)">
+        <button
+          type="button"
+          className="hud-button"
+          onClick={handleExportProject}
+          aria-label="Сохранить проект в файл"
+        >
+          <DownloadIcon size={20} />
+        </button>
+      </Tooltip>
+      <Tooltip label="Открыть проект (.voxcel)">
+        <button
+          type="button"
+          className="hud-button"
+          onClick={() => fileInputRef.current?.click()}
+          aria-label="Открыть проект из файла"
+        >
+          <FolderIcon size={20} />
+        </button>
+      </Tooltip>
       <div className="hud-divider" />
-      <button
-        type="button"
-        className="hud-button"
-        onClick={handleScreenshot}
-        aria-label="Сделать скриншот"
-        title="Сохранить картинку (.png)"
-      >
-        <ScreenshotIcon size={20} />
-      </button>
+      <Tooltip label="Сохранить картинку (.png)">
+        <button
+          type="button"
+          className="hud-button"
+          onClick={handleScreenshot}
+          aria-label="Сделать скриншот"
+        >
+          <ScreenshotIcon size={20} />
+        </button>
+      </Tooltip>
       <div className="hud-divider" />
-      <button
-        type="button"
-        className="hud-button"
-        onClick={handleExportModel}
-        disabled={exportingModel}
-        aria-label="Экспортировать 3D-модель"
-        title="Экспортировать как 3D-модель (.glb) — для игр и других программ"
-      >
-        <ExportModelIcon size={20} />
-      </button>
+      <Tooltip label="Экспортировать как 3D-модель (.glb) — для игр и других программ">
+        <button
+          type="button"
+          className="hud-button"
+          onClick={handleExportModel}
+          disabled={exportingModel}
+          aria-label="Экспортировать 3D-модель"
+        >
+          <ExportModelIcon size={20} />
+        </button>
+      </Tooltip>
       <input
         ref={fileInputRef}
         type="file"

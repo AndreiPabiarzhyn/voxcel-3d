@@ -1,11 +1,12 @@
 import { useState } from 'react'
+import clearIcon from '../../assets/actionIcons/clear.svg'
 import { ConfirmDialog } from '../../components/ConfirmDialog'
+import { Tooltip } from '../../components/Tooltip'
 import { ChallengesButton } from '../challenges/ChallengesButton'
 import { useToastStore } from '../../lib/toast/toastStore'
 import { useProjectStore } from '../../store/projectStore'
+import { Palette } from './Palette'
 import './SidePanel.css'
-
-const CLEAR_ICON = `${import.meta.env.BASE_URL}icons/actions/clear.svg`
 
 export function SidePanel() {
   const hasVoxels = useProjectStore((state) => Object.keys(state.voxels).length > 0)
@@ -18,17 +19,20 @@ export function SidePanel() {
 
   return (
     <div className="side-panel hud-panel hud-panel--column">
+      <Palette />
+      <div className="hud-divider--h" />
       <ChallengesButton />
-      <button
-        type="button"
-        className="hud-button"
-        onClick={() => setConfirmingClear(true)}
-        disabled={!hasVoxels}
-        aria-label="Стереть всё"
-        title="Стереть все кубики"
-      >
-        <img className="hud-button__icon" src={CLEAR_ICON} alt="" />
-      </button>
+      <Tooltip label="Стереть все кубики">
+        <button
+          type="button"
+          className="hud-button"
+          onClick={() => setConfirmingClear(true)}
+          disabled={!hasVoxels}
+          aria-label="Стереть всё"
+        >
+          <img className="hud-button__icon" src={clearIcon} alt="" />
+        </button>
+      </Tooltip>
       {confirmingClear && (
         <ConfirmDialog
           title="Стереть всё?"

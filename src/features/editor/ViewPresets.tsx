@@ -1,4 +1,5 @@
 import { setViewPreset, type ViewPreset } from '../../scene/cameraController'
+import { Tooltip } from '../../components/Tooltip'
 import { FrontViewIcon, HomeIcon, TopViewIcon } from './icons'
 import './ViewPresets.css'
 
@@ -12,16 +13,16 @@ export function ViewPresets() {
   return (
     <div className="view-presets hud-panel">
       {PRESETS.map(({ id, label, Icon }) => (
-        <button
-          key={id}
-          type="button"
-          className="hud-button"
-          onClick={() => setViewPreset(id)}
-          aria-label={label}
-          title={label}
-        >
-          <Icon size={20} />
-        </button>
+        <Tooltip key={id} label={label}>
+          <button
+            type="button"
+            className="hud-button"
+            onClick={() => setViewPreset(id)}
+            aria-label={label}
+          >
+            <Icon size={20} />
+          </button>
+        </Tooltip>
       ))}
     </div>
   )

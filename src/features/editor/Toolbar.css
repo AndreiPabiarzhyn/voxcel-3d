@@ -4,22 +4,42 @@
   gap: 8px;
 }
 
-.tool-color-picker {
+/* The tool (hammer/brush) is the dominant, full-size, crisp icon; the
+   brick is a small dimmed accent badge in the corner — see ComboIcon in
+   Toolbar.tsx. Sized to fill the same 26px slot a plain .hud-button__icon
+   uses, so erase/paint sit flush with place/undo/redo. */
+.combo-icon {
   position: relative;
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
 }
 
-/* This wrapper's own box (not just the visible card) reaches down to
-   touch the paint button — an invisible `padding-bottom` buffer, not a
-   real gap — so the mouse can travel from the button up into the card
-   without ever leaving `.tool-color-picker`'s hover region and closing it
-   early (a true empty gap between two elements is neither element, so
-   crossing it would fire mouseleave before the pointer reaches the card). */
-.tool-color-picker__popover {
+.combo-icon__fg {
+  width: 100%;
+  height: 100%;
+}
+
+.combo-icon__bg {
   position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  padding-bottom: 8px;
-  z-index: 15;
+  width: 13px;
+  height: 13px;
+  left: -3px;
+  bottom: -3px;
+  opacity: 0.65;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.5));
 }
 
+/* Portalled to <body> (see Toolbar.tsx) so it can never be clipped by an
+   ancestor's overflow — .editor-hud itself uses overflow-y: hidden to
+   support horizontal scrolling on narrow windows, which would otherwise
+   clip anything that pokes out its top. Positioned via inline
+   left/bottom computed from the paint button's own bounding rect. */
+.tool-color-picker__popover {
+  position: fixed;
+  transform: translateX(-50%);
+  z-index: 40;
+}

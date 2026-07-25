@@ -1044,3 +1044,142 @@ asking for two things:
 - Not visually re-verified by me (no screenshot tool) — please confirm
   the popover actually stays open while moving the mouse from the button
   up into the color grid, and that the new erase icon reads clearly.
+
+## 2026-07-25 — restored left color panel, fixed the broken popover, hammer/paint composite icons
+
+Andrei pushed back hard on the previous change: the left-side color panel
+should never have been removed ("это не трогай" — don't touch that), the
+paint-button popover "doesn't work" at all, and the icons still looked
+unchanged to him. Mid-message he also asked for a specific new icon
+concept: a hammer breaking a brick for erase, and a paint roller painting
+a brick wall for fill.
+
+**Restored the left panel.** My read last time — "colors move into the
+popover instead of the side panel" — was wrong; he wanted *both*: the
+permanent side-panel swatches back exactly as they were, *plus* a working
+popover on the paint button as an additional/faster way to pick a color.
+`SidePanel` renders `Palette` again. Since `Palette` is now used in two
+places with different available width, gave it an optional `className`
+prop: default CSS is back to a 2-column grid (fits the narrow side panel),
+and the popover passes `palette--wide` for a 4-column layout instead.
+
+**Root-caused why the popover "didn't work".** It wasn't a logic bug in
+the open/close handlers — the popover was rendering, but invisible.
+`.editor-hud` (the bottom toolbar's wrapper) sets `overflow-y: hidden` to
+support horizontal scrolling without a vertical scrollbar on narrow
+windows (an earlier fix). Any absolutely-positioned child that pokes out
+the top of that box — exactly what a popover anchored `bottom: 100%` on
+a button inside it does — gets clipped by that overflow rule. Fixed by
+portalling the popover straight to `document.body` (`createPortal`, same
+technique already used for `ConfirmDialog`), with its position computed
+from the paint button's own `getBoundingClientRect()` instead of CSS
+`position: relative` on an ancestor.
+- Portalling breaks the DOM-ancestry trick from the previous attempt
+  (padding-buffer to keep hover continuous) since the popover is no longer
+  a DOM descendant of the button's wrapper. Replaced it with the standard
+  hover-intent pattern: leaving either the button or the popover schedules
+  a close 150ms later; entering either one cancels that pending close.
+  Robust regardless of any visual gap or portal boundary.
+
+**"You didn't change the icons."** Likely real cause: the action icons
+lived in `public/icons/actions/*.svg`, referenced by a plain unhashed
+string path — exactly the kind of URL browsers cache aggressively with no
+way to bust it on redeploy. Moved all of them into `src/assets/actionIcons/`
+and switched every reference to an ES `import`, so Vite fingerprints them
+into the build. They turned out small enough (all under Vite's 4kb
+inline threshold) to get inlined as base64 `data:` URIs directly inside
+the already content-hashed JS bundle — even more robust than a separate
+hashed file, since there's no longer a second cacheable URL at all for
+this class of asset.
+
+**New icon concept — a tool acting on a brick, not just a bare emoji.**
+Per the specific request: erase = hammer breaking a brick, fill = a
+brick wall being painted. Twemoji has no "paint roller" emoji (checked
+before assuming one didn't exist rather than improvising), so used the
+paintbrush already on hand instead of hand-drawing one, on the same
+composited-brick concept as the hammer — flagged this substitution
+explicitly rather than silently deciding it was close enough. Built a
+small `ComboIcon` (place's brick dimmed to 55% opacity as a backdrop,
+the actual tool — hammer or paintbrush — crisp on top, bottom-right,
+with a drop-shadow for separation) instead of hand-drawing a fused
+scene, keeping both layers real verified Twemoji assets per
+[[design-approach]] rather than fabricating new artwork.
+- `npm run build` and `npm run lint` clean; confirmed via grep that the
+  icons are actually inlined as `data:image/svg+xml` in the built JS.
+- Not visually verified by me (no screenshot/browser tool) — please
+  check the popover now actually stays open while moving from the paint
+  button into the color grid, and whether the hammer/brick and
+  paintbrush/brick combo reads clearly at the toolbar's icon size.
+
+## 2026-07-25 — flipped icon emphasis, custom tooltips (no paint roller exists)
+
+Follow-up to the hammer/brick combo icons: "good, but put the emphasis on
+the hammer/brush, not the brick — the brick should be small in the back."
+Also asked again specifically for a paint *roller*, and separately asked
+to improve how tooltips look and bump their font size a bit.
+
+- **Flipped `ComboIcon` proportions** (`Toolbar.tsx`/`.css`): the tool
+  (hammer/paintbrush) is now the full-size, crisp, dominant icon; the
+  brick shrank to a small 13px dimmed accent tucked in the bottom-left
+  corner. Previously it was backwards — brick large, tool a small corner
+  badge — which is exactly what read wrong.
+- **Checked, don't have a paint roller.** Verified before answering
+  rather than guessing: fetched Unicode's official emoji list and
+  GitHub's `gemoji` dataset and searched both for "roller" — no paint
+  roller emoji exists in the Unicode standard as of this writing. Per
+  [[design-approach]] (verified real assets only, no hand-drawn art),
+  kept the paintbrush as the closest real substitute rather than
+  fabricating a roller icon myself — flagging this substitution
+  explicitly instead of quietly deciding it was close enough.
+- **Custom `Tooltip` component** (`src/components/Tooltip.tsx` + `.css`)
+  replacing native browser `title` attributes across every icon-only HUD
+  button (`Toolbar`, `SidePanel`, `FileMenu`, `ViewPresets`,
+  `ChallengesButton`): a styled dark pill in the app's own Nunito/token
+  system, bigger and more legible than the tiny native OS tooltip,
+  400ms hover delay to avoid flicker on a quick mouse pass.
+  - Portalled to `document.body` and positioned from the trigger's own
+    `getBoundingClientRect()` — same technique as the color-picker
+    popover and `ConfirmDialog`, for the same reason: several of these
+    buttons live inside `hud-panel`s that clip overflow (`.editor-hud`,
+    `.side-panel`), so a plain CSS-relative tooltip would've been
+    clipped exactly like the color popover was before that fix.
+  - Caught a real collision before it shipped: the paint button already
+    opens its own color-picker popover in roughly the same screen
+    position a tooltip would occupy above it. Added an optional
+    `disabled` prop to `Tooltip` and pass `disabled={colorsOpen}` on
+    that one button, so the two floating cards never stack.
+- `npm run build` / `npm run lint` clean. Not visually verified by me —
+  please check the new icon proportions and hover the buttons to see the
+  custom tooltips (and confirm the paint button's tooltip correctly stays
+  away while its color popover is open).
+
+## 2026-07-25 — tooltip clipped at screen top + palette swatches still native
+
+Screenshot showed the "Вид сверху" tooltip in the top-left `ViewPresets`
+row cut off by the actual browser viewport edge — the tooltip always
+rendered *above* its button, and that button sits at `top: 16px`, leaving
+nowhere for an "above" tooltip to fit without going off-screen. Separately,
+the individual color swatches in `Palette` were never switched over from
+the earlier turn — still plain `title` attributes, so still native OS
+tooltips there while every other button got the custom styled one.
+
+- **`Tooltip.tsx`**: now checks the anchor's distance from the top of the
+  viewport (`rect.top < 48px` of clearance) and flips to rendering
+  *below* the button instead of above when there isn't room — same
+  `getBoundingClientRect`-driven positioning as before, just no longer
+  hardcoded to one side. Also clamps the horizontal position so it can't
+  slide off the left/right edges either (a bug that hadn't been hit yet
+  but was clearly next in line, given the top-edge one had just fired for
+  the same reason). Bubble also gained a `max-width` + centered wrapping
+  instead of `white-space: nowrap`, since some labels (the .glb export
+  one) are full sentences that could otherwise force the tooltip wider
+  than the viewport.
+- **`Palette.tsx`**: swatches now wrapped in the same `<Tooltip>` used
+  everywhere else, `title` attribute removed. Palette is a CSS grid of
+  36px cells; wrapping each button in an `inline-flex` tooltip-anchor
+  span didn't change the grid sizing (grid tracks constrain the span the
+  same way they constrained the button directly).
+- `npm run build` / `npm run lint` clean. Not visually re-verified by me
+  — please check the top-row view-preset tooltips now appear below the
+  buttons instead of getting cut off, and that hovering a color swatch
+  now shows the same styled tooltip as everything else.
