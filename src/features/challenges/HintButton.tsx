@@ -16,18 +16,20 @@ export function HintButton() {
   if (!activeChallengeId) return null
 
   return (
-    <div className="hint-button hud-panel">
-      <Tooltip label={hintVisible ? t.hint.hide : t.hint.show}>
-        <button
-          type="button"
-          className={hintVisible ? 'hud-button hud-button--active-gold' : 'hud-button'}
-          onClick={toggleHint}
-          aria-label={t.hint.label}
-          aria-pressed={hintVisible}
-        >
-          <img className="hud-button__icon" src={lightbulbIcon} alt="" />
-        </button>
-      </Tooltip>
-    </div>
+    <Tooltip label={hintVisible ? t.hint.hide : t.hint.show}>
+      <button
+        type="button"
+        className={
+          hintVisible
+            ? 'hint-button hud-button hud-button--active-gold'
+            : 'hint-button hud-button'
+        }
+        onClick={toggleHint}
+        aria-label={t.hint.label}
+        aria-pressed={hintVisible}
+      >
+        <img className="hud-button__icon" src={lightbulbIcon} alt="" />
+      </button>
+    </Tooltip>
   )
 }

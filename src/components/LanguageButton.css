@@ -1,8 +1,16 @@
+/* No hud-panel wrapper here on purpose — every other floating cluster
+   (Toolbar, FileMenu...) groups several buttons, so the panel's own
+   rounded border/background reads as "chrome around a group." Wrapping
+   a single button that already has its own rounded border/background
+   just drew two concentric rounded rects around one icon. Carrying the
+   panel's shadow directly on the button keeps the same "floating chip"
+   look without the redundant second outline. */
 .language-button {
   position: fixed;
   right: 16px;
   bottom: 16px;
   z-index: 10;
+  box-shadow: var(--shadow-float);
 }
 
 .language-button__popover {

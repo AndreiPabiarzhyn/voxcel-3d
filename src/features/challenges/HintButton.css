@@ -1,7 +1,11 @@
+/* No hud-panel wrapper — same reasoning as LanguageButton.css: wrapping
+   a single already-rounded-and-bordered button in another rounded panel
+   just draws two concentric outlines around one icon. */
 .hint-button {
   position: fixed;
   top: 16px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
+  box-shadow: var(--shadow-float);
 }

@@ -41,12 +41,12 @@ export function LanguageButton() {
   }
 
   return (
-    <div className="language-button hud-panel">
+    <>
       <Tooltip label={t.language.buttonLabel} disabled={open}>
         <button
           ref={buttonRef}
           type="button"
-          className="hud-button"
+          className="language-button hud-button"
           onClick={toggleOpen}
           aria-label={t.language.buttonLabel}
           aria-pressed={open}
@@ -84,6 +84,6 @@ export function LanguageButton() {
           </div>,
           document.body,
         )}
-    </div>
+    </>
   )
 }

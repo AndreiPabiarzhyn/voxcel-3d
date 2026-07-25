@@ -1652,3 +1652,35 @@ against each other.
 
 `npm run build` / `npm run lint` clean. Not visually re-verified by me —
 please confirm the ring is gone now.
+
+## 2026-07-25 — the actual doubled border: a panel wrapping a single button
+
+Previous fix (dropping the active-cyan class) didn't fix it — Andrei
+pointed out the doubling was on the *container*, not focus styling.
+Correct root cause: `LanguageButton` wrapped its one button in a
+`<div className="... hud-panel">`. `.hud-panel` (Toolbar, FileMenu,
+ViewPresets...) is meant to be chrome *around a group* of buttons — its
+own rounded border/background makes sense when there's a divider and
+several icons inside. Wrapping a *single* button — which already has its
+own rounded border and background via `.hud-button` — in that same panel
+styling just draws two concentric rounded rectangles around one icon.
+That's what read as a "doubled outline," and it had nothing to do with
+focus state at all — it was there constantly, open or closed.
+
+Fixed by dropping the wrapper entirely: the position/shadow that used to
+live on the outer `hud-panel` div now lives directly on the button
+(`.language-button` class carries `position: fixed` + `box-shadow:
+var(--shadow-float)`, composed with `.hud-button`'s own border/background/
+radius). Same single rounded floating chip look, one outline instead of
+two.
+
+Found and fixed the identical structural bug in `HintButton` while
+here — same "single button wrapped in its own `hud-panel`" pattern,
+not yet reported but certain to look the same way. Kept its
+`hud-button--active-gold` color change (unlike the language button,
+this one has no accompanying popover, so the gold border is the *only*
+signal that the hint is currently visible — removing it would lose real
+information, not just redundant chrome).
+
+`npm run build` / `npm run lint` clean. Not visually re-verified by me —
+please confirm both buttons now show a single clean outline.
