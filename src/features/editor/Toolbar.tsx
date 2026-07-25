@@ -6,6 +6,7 @@ import paintIcon from '../../assets/actionIcons/paint.svg'
 import redoIcon from '../../assets/actionIcons/redo.svg'
 import undoIcon from '../../assets/actionIcons/undo.svg'
 import { Tooltip } from '../../components/Tooltip'
+import { useTranslations } from '../../i18n/useTranslations'
 import { redoWithSound, undoWithSound } from '../../store/historyActions'
 import { useProjectStore } from '../../store/projectStore'
 import { Palette } from './Palette'
@@ -32,6 +33,7 @@ function ComboIcon({ tool, label }: { tool: string; label: string }) {
 const CLOSE_DELAY_MS = 150
 
 export function Toolbar() {
+  const t = useTranslations()
   const tool = useProjectStore((state) => state.tool)
   const setTool = useProjectStore((state) => state.setTool)
   const canUndo = useProjectStore((state) => state.past.length > 0)
@@ -76,29 +78,29 @@ export function Toolbar() {
 
   return (
     <div className="toolbar">
-      <Tooltip label="Добавить блок">
+      <Tooltip label={t.toolbar.place}>
         <button
           type="button"
           className={tool === 'place' ? 'hud-button hud-button--active-cyan' : 'hud-button'}
           onClick={() => setTool('place')}
-          aria-label="Добавить блок"
+          aria-label={t.toolbar.place}
           aria-pressed={tool === 'place'}
         >
           <img className="hud-button__icon" src={brickIcon} alt="" />
         </button>
       </Tooltip>
-      <Tooltip label="Стереть блок">
+      <Tooltip label={t.toolbar.erase}>
         <button
           type="button"
           className={tool === 'erase' ? 'hud-button hud-button--active-cyan' : 'hud-button'}
           onClick={() => setTool('erase')}
-          aria-label="Стереть блок"
+          aria-label={t.toolbar.erase}
           aria-pressed={tool === 'erase'}
         >
-          <ComboIcon tool={hammerIcon} label="Стереть блок" />
+          <ComboIcon tool={hammerIcon} label={t.toolbar.erase} />
         </button>
       </Tooltip>
-      <Tooltip label="Покрасить" disabled={colorsOpen}>
+      <Tooltip label={t.toolbar.paint} disabled={colorsOpen}>
         <button
           ref={paintButtonRef}
           type="button"
@@ -106,10 +108,10 @@ export function Toolbar() {
           onClick={openColorPicker}
           onMouseEnter={cancelClose}
           onMouseLeave={scheduleClose}
-          aria-label="Покрасить"
+          aria-label={t.toolbar.paint}
           aria-pressed={tool === 'paint'}
         >
-          <ComboIcon tool={paintIcon} label="Покрасить" />
+          <ComboIcon tool={paintIcon} label={t.toolbar.paint} />
         </button>
       </Tooltip>
       {colorsOpen &&
@@ -127,24 +129,24 @@ export function Toolbar() {
           document.body,
         )}
       <div className="hud-divider" />
-      <Tooltip label="Отменить (Ctrl+Z)">
+      <Tooltip label={t.toolbar.undoTooltip}>
         <button
           type="button"
           className="hud-button"
           onClick={undoWithSound}
           disabled={!canUndo}
-          aria-label="Отменить"
+          aria-label={t.toolbar.undoLabel}
         >
           <img className="hud-button__icon" src={undoIcon} alt="" />
         </button>
       </Tooltip>
-      <Tooltip label="Вернуть (Ctrl+Y)">
+      <Tooltip label={t.toolbar.redoTooltip}>
         <button
           type="button"
           className="hud-button"
           onClick={redoWithSound}
           disabled={!canRedo}
-          aria-label="Вернуть"
+          aria-label={t.toolbar.redoLabel}
         >
           <img className="hud-button__icon" src={redoIcon} alt="" />
         </button>

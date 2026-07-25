@@ -1,0 +1,107 @@
+import type { Translations } from '../types'
+
+export const pl: Translations = {
+  common: {
+    cancel: 'Nie trzeba',
+  },
+  toolbar: {
+    place: 'Dodaj klocek',
+    erase: 'Usuń klocek',
+    paint: 'Maluj',
+    undoTooltip: 'Cofnij (Ctrl+Z)',
+    undoLabel: 'Cofnij',
+    redoTooltip: 'Ponów (Ctrl+Y)',
+    redoLabel: 'Ponów',
+  },
+  sidePanel: {
+    clearAllTooltip: 'Usuń wszystkie klocki',
+    clearAllLabel: 'Usuń wszystko',
+    clearAllConfirmTitle: 'Usunąć wszystko?',
+    clearAllConfirmMessage:
+      'Wszystkie klocki na siatce zostaną usunięte. Możesz to cofnąć przyciskiem «Cofnij».',
+    clearAllConfirmYes: 'Tak, usuń wszystko',
+  },
+  fileMenu: {
+    newProjectTooltip: 'Zacznij nowy projekt (usunie bieżącą budowlę)',
+    newProjectLabel: 'Nowy projekt',
+    saveTooltip: 'Zapisz projekt (.voxcel)',
+    saveLabel: 'Zapisz projekt do pliku',
+    openTooltip: 'Otwórz projekt (.voxcel)',
+    openLabel: 'Otwórz projekt z pliku',
+    screenshotTooltip: 'Zapisz obrazek (.png)',
+    screenshotLabel: 'Zrób zrzut ekranu',
+    exportModelTooltip: 'Eksportuj jako model 3D (.glb) — do gier i innych programów',
+    exportModelLabel: 'Eksportuj model 3D',
+    newProjectConfirmTitle: 'Zacząć nowy projekt?',
+    newProjectConfirmMessage:
+      'Bieżąca budowla zostanie usunięta. Jeśli chcesz ją zachować, najpierw zapisz projekt lub zrób zrzut ekranu.',
+    newProjectConfirmYes: 'Tak, usuń',
+  },
+  toast: {
+    projectSaved: 'Projekt zapisany do pliku 💾',
+    screenshotSaved: 'Zrzut ekranu zapisany 📸',
+    newProjectStarted: 'Nowy projekt rozpoczęty ✨',
+    projectOpened: 'Projekt otwarty! 🎉',
+    projectOpenError: 'Nie udało się otworzyć pliku — na pewno to plik .voxcel? 🤔',
+    modelExported: 'Model 3D zapisany do pliku 📦',
+    allCleared: 'Wszystko wyczyszczone 🧹',
+    challengeComplete: 'Gotowe! Zbudowałeś: {{title}} 🎉',
+  },
+  viewPresets: {
+    home: 'Widok domyślny',
+    front: 'Widok z przodu',
+    top: 'Widok z góry',
+  },
+  challenges: {
+    buttonLabel: 'Zadania',
+    close: 'Zamknij',
+    completedBadge: 'Gotowe',
+    actionPlaying: 'Gram',
+    actionRetry: 'Jeszcze raz',
+    actionStart: 'Zacznij',
+    sandboxMode: 'Tryb swobodny (bez zadania)',
+    saveBeforeStartTitle: 'Zapisać obecną budowlę?',
+    saveBeforeStartMessage:
+      'Zadanie zaczyna się na pustej siatce — to, co już zbudowałeś, zostanie usunięte. Zapisać budowlę do pliku najpierw?',
+    saveBeforeStartDiscard: 'Nie zapisuj',
+    saveBeforeStartSave: 'Zapisz i zacznij',
+    houseTitle: 'Domek',
+    houseHint: 'Zbuduj domek z drzwiami, oknami i dachem',
+    treeTitle: 'Choinka',
+    treeHint: 'Zbuduj puszystą choinkę',
+    amongUsTitle: 'Among Us',
+    amongUsHint: 'Zbuduj postać z Among Us',
+  },
+  hint: {
+    show: 'Pokaż podpowiedź',
+    hide: 'Ukryj podpowiedź',
+    label: 'Podpowiedź',
+  },
+  welcome: {
+    title: 'Cześć! 🐷',
+    message:
+      'Przygotowaliśmy dla Ciebie figurkę na start — świnkę z klocków. Zostawić ją i budować dalej, czy zacząć od pustej siatki?',
+    keepPig: 'Zostaw świnkę',
+    startNew: 'Nowy projekt',
+  },
+  palette: {
+    red: 'Czerwony',
+    orange: 'Pomarańczowy',
+    yellow: 'Żółty',
+    green: 'Zielony',
+    cyan: 'Błękitny',
+    blue: 'Niebieski',
+    purple: 'Fioletowy',
+    pink: 'Różowy',
+    brown: 'Brązowy',
+    white: 'Biały',
+    black: 'Czarny',
+    gray: 'Szary',
+  },
+  project: {
+    defaultName: 'Moja budowla',
+  },
+  language: {
+    buttonLabel: 'Język',
+  },
+}

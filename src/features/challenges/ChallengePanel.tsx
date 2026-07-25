@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { ConfirmDialog } from '../../components/ConfirmDialog'
+import { useTranslations } from '../../i18n/useTranslations'
 import { downloadProjectFile } from '../../lib/storage/exportProjectFile'
 import { useToastStore } from '../../lib/toast/toastStore'
 import { selectHasVoxels, useProjectStore } from '../../store/projectStore'
@@ -10,6 +11,7 @@ import { getChallengeProgress } from './challengeProgress'
 import { useChallengeStore } from './challengeStore'
 
 export function ChallengePanel() {
+  const t = useTranslations()
   const panelOpen = useChallengeStore((state) => state.panelOpen)
   const activeChallengeId = useChallengeStore((state) => state.activeChallengeId)
   const completedChallengeIds = useChallengeStore((state) => state.completedChallengeIds)
@@ -39,12 +41,12 @@ export function ChallengePanel() {
     <div className="modal-backdrop" onClick={closePanel}>
       <div className="modal-panel challenge-panel" onClick={(event) => event.stopPropagation()}>
         <div className="challenge-panel__header">
-          <h2>Задания</h2>
+          <h2>{t.challenges.buttonLabel}</h2>
           <button
             type="button"
             className="hud-button"
             onClick={closePanel}
-            aria-label="Закрыть"
+            aria-label={t.challenges.close}
           >
             <CloseIcon size={20} />
           </button>
@@ -73,14 +75,14 @@ export function ChallengePanel() {
                     aria-hidden="true"
                   />
                   {completed && (
-                    <span className="challenge-card__done-badge" aria-label="Готово">
+                    <span className="challenge-card__done-badge" aria-label={t.challenges.completedBadge}>
                       <CompletedIcon size={13} strokeWidth={3} />
                     </span>
                   )}
                 </div>
                 <div className="challenge-card__info">
-                  <div className="challenge-card__title">{challenge.title}</div>
-                  <div className="challenge-card__hint">{challenge.hint}</div>
+                  <div className="challenge-card__title">{t.challenges[challenge.titleKey]}</div>
+                  <div className="challenge-card__hint">{t.challenges[challenge.hintKey]}</div>
                   {active && (
                     <div className="challenge-card__progress">
                       {filled} / {total}
@@ -92,7 +94,11 @@ export function ChallengePanel() {
                   className="btn-pill challenge-card__action"
                   onClick={() => handleStart(challenge.id)}
                 >
-                  {active ? 'Играю' : completed ? 'Ещё раз' : 'Начать'}
+                  {active
+                    ? t.challenges.actionPlaying
+                    : completed
+                      ? t.challenges.actionRetry
+                      : t.challenges.actionStart}
                 </button>
               </div>
             )
@@ -107,23 +113,23 @@ export function ChallengePanel() {
             closePanel()
           }}
         >
-          Свободный режим (без задания)
+          {t.challenges.sandboxMode}
         </button>
       </div>
 
       {pendingChallengeId && (
         <ConfirmDialog
-          title="Сохранить текущую постройку?"
-          message="Задание начинается с чистой сетки — то, что уже построено, будет стёрто. Сохранить постройку в файл перед началом?"
-          confirmLabel="Не сохранять"
-          cancelLabel="Сохранить и начать"
+          title={t.challenges.saveBeforeStartTitle}
+          message={t.challenges.saveBeforeStartMessage}
+          confirmLabel={t.challenges.saveBeforeStartDiscard}
+          cancelLabel={t.challenges.saveBeforeStartSave}
           onConfirm={() => {
             beginChallenge(pendingChallengeId)
             setPendingChallengeId(null)
           }}
           onCancel={() => {
             downloadProjectFile(useProjectStore.getState().toProject())
-            useToastStore.getState().show('Проект сохранён в файл 💾', 'success')
+            useToastStore.getState().show(t.toast.projectSaved, 'success')
             beginChallenge(pendingChallengeId)
             setPendingChallengeId(null)
           }}

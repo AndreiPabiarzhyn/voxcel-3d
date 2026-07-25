@@ -1,0 +1,107 @@
+import type { Translations } from '../types'
+
+export const tr: Translations = {
+  common: {
+    cancel: 'Gerek yok',
+  },
+  toolbar: {
+    place: 'Blok ekle',
+    erase: 'Blok sil',
+    paint: 'Boya',
+    undoTooltip: 'Geri al (Ctrl+Z)',
+    undoLabel: 'Geri al',
+    redoTooltip: 'Yinele (Ctrl+Y)',
+    redoLabel: 'Yinele',
+  },
+  sidePanel: {
+    clearAllTooltip: 'Tüm blokları sil',
+    clearAllLabel: 'Tümünü sil',
+    clearAllConfirmTitle: 'Her şey silinsin mi?',
+    clearAllConfirmMessage:
+      'Izgaradaki tüm bloklar silinecek. Bunu «Geri al» düğmesiyle geri alabilirsin.',
+    clearAllConfirmYes: 'Evet, tümünü sil',
+  },
+  fileMenu: {
+    newProjectTooltip: 'Yeni bir proje başlat (mevcut yapıyı siler)',
+    newProjectLabel: 'Yeni proje başlat',
+    saveTooltip: 'Projeyi kaydet (.voxcel)',
+    saveLabel: 'Projeyi dosyaya kaydet',
+    openTooltip: 'Proje aç (.voxcel)',
+    openLabel: 'Dosyadan proje aç',
+    screenshotTooltip: 'Görüntü kaydet (.png)',
+    screenshotLabel: 'Ekran görüntüsü al',
+    exportModelTooltip: '3D model olarak dışa aktar (.glb) — oyunlar ve diğer programlar için',
+    exportModelLabel: '3D modeli dışa aktar',
+    newProjectConfirmTitle: 'Yeni bir proje başlatılsın mı?',
+    newProjectConfirmMessage:
+      'Mevcut yapı silinecek. Saklamak istiyorsan önce projeyi kaydet ya da ekran görüntüsü al.',
+    newProjectConfirmYes: 'Evet, sil',
+  },
+  toast: {
+    projectSaved: 'Proje dosyaya kaydedildi 💾',
+    screenshotSaved: 'Ekran görüntüsü kaydedildi 📸',
+    newProjectStarted: 'Yeni proje başlatıldı ✨',
+    projectOpened: 'Proje açıldı! 🎉',
+    projectOpenError: 'Dosya açılamadı — gerçekten bir .voxcel dosyası mı? 🤔',
+    modelExported: '3D model dosyaya kaydedildi 📦',
+    allCleared: 'Her şey silindi 🧹',
+    challengeComplete: 'Bitti! Yaptığın: {{title}} 🎉',
+  },
+  viewPresets: {
+    home: 'Varsayılan görünüm',
+    front: 'Önden görünüm',
+    top: 'Üstten görünüm',
+  },
+  challenges: {
+    buttonLabel: 'Görevler',
+    close: 'Kapat',
+    completedBadge: 'Tamamlandı',
+    actionPlaying: 'Oynuyorum',
+    actionRetry: 'Tekrar dene',
+    actionStart: 'Başla',
+    sandboxMode: 'Serbest mod (görevsiz)',
+    saveBeforeStartTitle: 'Mevcut yapın kaydedilsin mi?',
+    saveBeforeStartMessage:
+      'Görev boş bir ızgarayla başlar — şu ana kadar yaptığın her şey silinecek. Önce yapını bir dosyaya kaydetmek ister misin?',
+    saveBeforeStartDiscard: 'Kaydetme',
+    saveBeforeStartSave: 'Kaydet ve başla',
+    houseTitle: 'Ev',
+    houseHint: 'Kapısı, pencereleri ve çatısı olan bir ev yap',
+    treeTitle: 'Çam ağacı',
+    treeHint: 'Gür bir çam ağacı yap',
+    amongUsTitle: 'Among Us',
+    amongUsHint: 'Among Us karakteri yap',
+  },
+  hint: {
+    show: 'İpucunu göster',
+    hide: 'İpucunu gizle',
+    label: 'İpucu',
+  },
+  welcome: {
+    title: 'Selam! 🐷',
+    message:
+      'Senin için başlangıç figürü hazırladık — bloklardan yapılmış bir domuz. Onu koruyup inşa etmeye devam etmek mi, yoksa boş bir ızgarayla mı başlamak istersin?',
+    keepPig: 'Domuzu koru',
+    startNew: 'Yeni proje',
+  },
+  palette: {
+    red: 'Kırmızı',
+    orange: 'Turuncu',
+    yellow: 'Sarı',
+    green: 'Yeşil',
+    cyan: 'Açık mavi',
+    blue: 'Mavi',
+    purple: 'Mor',
+    pink: 'Pembe',
+    brown: 'Kahverengi',
+    white: 'Beyaz',
+    black: 'Siyah',
+    gray: 'Gri',
+  },
+  project: {
+    defaultName: 'Yapım',
+  },
+  language: {
+    buttonLabel: 'Dil',
+  },
+}

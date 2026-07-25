@@ -1484,3 +1484,102 @@ silent edit):**
   for awareness, not treating as urgent.
 
 `npm run build` / `npm run lint` clean after the fixes.
+
+## 2026-07-25 — full language support: 8 languages, English default
+
+Andrei asked for a language picker with a globe icon, English as the
+initial/default language, and translations into Polish, Italian, Spanish,
+Turkish, Russian, Portuguese, and Indonesian.
+
+This touched almost every visible piece of UI text in the app, so before
+writing any translation keys, spawned a background Explore agent to read
+every file under `src/` and produce an exhaustive inventory of every
+user-facing string literal (JSX text, aria-labels, tooltip labels, toast
+messages, ConfirmDialog copy, palette color names, challenge titles/hints)
+— translating from memory risked silently missing a string that would
+then stay permanently in Russian regardless of the selected language.
+The inventory also caught several exact-duplicate strings worth sharing
+one key instead of drifting into two (e.g. "Проект сохранён в файл 💾"
+was hardcoded separately in both `FileMenu.tsx` and `ChallengePanel.tsx`).
+
+**Architecture** (`src/i18n/`), deliberately lightweight — no i18next or
+similar library, matching this project's existing "small, hand-rolled,
+no unnecessary dependencies" pattern:
+- `types.ts` — a single nested `Translations` interface covering every
+  string in the app (~85 keys across `toolbar`, `sidePanel`, `fileMenu`,
+  `toast`, `viewPresets`, `challenges`, `hint`, `welcome`, `palette`,
+  `project`, `language`). Every one of the 8 dictionaries must implement
+  this interface in full — `tsc -b` fails to build if any language is
+  missing a key, which is the only real safety net against a silently
+  half-translated language given there's no other test coverage here.
+- `dictionaries/{en,pl,it,es,tr,ru,pt,id}.ts` — one file per language.
+  `ru.ts` is the original strings copied verbatim (not re-translated) so
+  Russian behavior is byte-for-byte unchanged from before i18n existed.
+  The other 6 were translated fresh, aiming for the same casual,
+  kid-friendly tone as the Russian original rather than stiff literal
+  translations.
+- `languages.ts` — the `LANGUAGES` list for the picker UI (English
+  first, matching "изначальный английский", then the rest in the order
+  Andrei listed them) and a `DICTIONARIES` registry.
+- `languageStore.ts` — a small zustand store, persisted to `localStorage`
+  (`voxcel:language`), defaulting to English. Also syncs
+  `document.documentElement.lang` on load and on every switch — `index.html`
+  was still hardcoded `lang="ru"` from before this feature existed, which
+  would have been actively wrong once the default became English.
+- `useTranslations()` — returns the whole nested dictionary object for
+  the current language (`t.toolbar.place`, not a string-keyed `t('...')`
+  function), so every call site is autocompleted and a typo fails to
+  compile instead of silently rendering a raw key at runtime. A
+  non-reactive `getTranslations()` variant covers the few places that
+  aren't React components — module-level toast helpers in `FileMenu.tsx`,
+  the challenge-complete toast in `ChallengeGhost.tsx` (which also
+  needed simple `{{title}}` interpolation, done with a plain
+  `.replace()` since there was only the one case), and `projectStore.ts`'s
+  default project name, which is now a function reading the current
+  language at call time instead of a fixed constant — it only had to
+  cover one interpolated string, so a full templating engine wasn't
+  worth building for it.
+- `challengeData.ts`: `Challenge.title`/`.hint` (plain strings) replaced
+  with `.titleKey`/`.hintKey` (keys into `t.challenges`), so the panel and
+  the completion toast can look them up in whatever language is active.
+- `paletteColors.ts`: same swap, `name` → `nameKey` (`keyof
+  Translations['palette']`).
+- Removed `ConfirmDialog`'s dead default `cancelLabel = 'Отмена'` — every
+  call site already passed it explicitly (confirmed by the inventory),
+  and a hardcoded Russian fallback would have been the one string in the
+  entire app immune to language switching.
+- `Credit.tsx` ("created by Andrei Pabiarzhyn") deliberately left
+  untranslated — it's an attribution/byline, not app UI, same category as
+  the product name "Voxcel 3D" itself.
+
+**`LanguageButton`** (`src/components/`): globe icon (Twemoji 🌐, same
+self-hosted/ES-import treatment as every other icon this session), fixed
+bottom-right — the one corner nothing else in the HUD occupies. Click
+opens a popover listing all 8 languages by their own native name
+(`Polski`, not a translation of "Polish" — recognizing your own language
+name doesn't depend on which language the UI happens to be in right
+now), closes on picking one or clicking anywhere else (a `pointerdown`
+listener checks whether the click landed inside the button or the
+popover, closes otherwise). Portalled to `document.body`, same
+clipping-avoidance reasoning as every other popover this session.
+
+**Follow-up fix, same turn**: the popover initially centered itself on
+the button (`left` + `translateX(-50%)`, copied from the paint-color
+popover pattern) — but this button sits in the bottom-*right* corner, so
+centering a ~170px-wide popover on it pushed its right half off-screen
+(caught from a screenshot showing "Bahasa Indonesia" clipped at the
+edge). Fixed by anchoring the popover's right edge to the button's right
+edge instead of centering on its midpoint — the button is already safely
+inset from the screen edge, so anchoring to it (rather than centering
+past it) keeps the whole popover on-screen regardless of viewport width.
+
+`npm run build` (all 8 dictionaries type-check against the full
+interface) and `npm run lint` clean. Also fixed two stale docs caught in
+passing: `index.html`'s meta description was still in Russian (updated
+to English to match the new default), and the README still described the
+mushroom challenge that was replaced by Among Us two sessions ago.
+
+Not visually verified by me — no browser tool here. Please click through
+each of the 8 languages and confirm the picker itself, every tooltip,
+every toast, and the challenge panel all read correctly, and that the
+popover no longer clips off the right edge.

@@ -1,6 +1,7 @@
 import amongusIcon from '../../assets/challengeIcons/amongus.svg'
 import houseIcon from '../../assets/challengeIcons/house.svg'
 import treeIcon from '../../assets/challengeIcons/tree.svg'
+import type { Translations } from '../../i18n/types'
 import { voxelKey } from '../../lib/voxel/key'
 import type { VoxelData, VoxelKey } from '../../types/project'
 
@@ -8,8 +9,11 @@ export type ChallengeAccent = 'gold' | 'leaf' | 'coral'
 
 export interface Challenge {
   id: string
-  title: string
-  hint: string
+  // Keys into t.challenges rather than plain strings, so the panel and
+  // the "challenge complete" toast can look them up in whatever
+  // language is currently selected.
+  titleKey: keyof Translations['challenges']
+  hintKey: keyof Translations['challenges']
   icon: string
   accent: ChallengeAccent
   target: Record<VoxelKey, VoxelData>
@@ -114,24 +118,24 @@ function buildAmongUs(): Record<VoxelKey, VoxelData> {
 export const CHALLENGES: Challenge[] = [
   {
     id: 'house',
-    title: 'Домик',
-    hint: 'Собери домик с дверью, окнами и крышей',
+    titleKey: 'houseTitle',
+    hintKey: 'houseHint',
     icon: houseIcon,
     accent: 'gold',
     target: buildHouse(),
   },
   {
     id: 'tree',
-    title: 'Ёлочка',
-    hint: 'Собери пушистую ёлочку',
+    titleKey: 'treeTitle',
+    hintKey: 'treeHint',
     icon: treeIcon,
     accent: 'leaf',
     target: buildTree(),
   },
   {
     id: 'amongus',
-    title: 'Амогус',
-    hint: 'Собери персонажа из Among Us',
+    titleKey: 'amongUsTitle',
+    hintKey: 'amongUsHint',
     icon: amongusIcon,
     accent: 'coral',
     target: buildAmongUs(),

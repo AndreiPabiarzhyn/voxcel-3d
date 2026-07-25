@@ -1,12 +1,20 @@
 import { create } from 'zustand'
+import { getTranslations } from '../i18n/useTranslations'
 import { loadProjectFromLocalStorage, saveProjectToLocalStorage } from '../lib/storage/localProject'
 import { voxelKey } from '../lib/voxel/key'
 import { buildStarterPig } from '../lib/voxel/starterPig'
 import type { VoxelData, VoxelKey, VoxelProject } from '../types/project'
 
 const DEFAULT_GRID_SIZE = 12
-const DEFAULT_PROJECT_NAME = 'Моя постройка'
 const MAX_HISTORY = 50
+
+// A function, not a constant: reads whatever language is selected right
+// now, so a fresh project (or "new project") always gets a name in the
+// current UI language rather than whatever language happened to be
+// active the first time this module loaded.
+function getDefaultProjectName() {
+  return getTranslations().project.defaultName
+}
 
 export type Tool = 'place' | 'paint' | 'erase'
 
@@ -58,7 +66,7 @@ const savedProject = loadProjectFromLocalStorage()
 
 export const useProjectStore = create<ProjectState>((set, get) => ({
   projectId: savedProject?.id ?? createId(),
-  projectName: savedProject?.name ?? DEFAULT_PROJECT_NAME,
+  projectName: savedProject?.name ?? getDefaultProjectName(),
   createdAt: savedProject?.createdAt ?? Date.now(),
   gridSize: savedProject?.gridSize ?? DEFAULT_GRID_SIZE,
   voxels: savedProject?.voxels ?? buildStarterPig(),
@@ -152,7 +160,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   newProject: () =>
     set({
       projectId: createId(),
-      projectName: DEFAULT_PROJECT_NAME,
+      projectName: getDefaultProjectName(),
       createdAt: Date.now(),
       gridSize: DEFAULT_GRID_SIZE,
       voxels: {},

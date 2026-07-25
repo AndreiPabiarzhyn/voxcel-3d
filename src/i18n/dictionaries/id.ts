@@ -1,0 +1,107 @@
+import type { Translations } from '../types'
+
+export const id: Translations = {
+  common: {
+    cancel: 'Tidak usah',
+  },
+  toolbar: {
+    place: 'Tambah balok',
+    erase: 'Hapus balok',
+    paint: 'Warnai',
+    undoTooltip: 'Urungkan (Ctrl+Z)',
+    undoLabel: 'Urungkan',
+    redoTooltip: 'Ulangi (Ctrl+Y)',
+    redoLabel: 'Ulangi',
+  },
+  sidePanel: {
+    clearAllTooltip: 'Hapus semua balok',
+    clearAllLabel: 'Hapus semua',
+    clearAllConfirmTitle: 'Hapus semuanya?',
+    clearAllConfirmMessage:
+      'Semua balok di kisi akan dihapus. Kamu bisa membatalkannya dengan tombol «Urungkan».',
+    clearAllConfirmYes: 'Ya, hapus semua',
+  },
+  fileMenu: {
+    newProjectTooltip: 'Mulai proyek baru (menghapus bangunan saat ini)',
+    newProjectLabel: 'Mulai proyek baru',
+    saveTooltip: 'Simpan proyek (.voxcel)',
+    saveLabel: 'Simpan proyek ke file',
+    openTooltip: 'Buka proyek (.voxcel)',
+    openLabel: 'Buka proyek dari file',
+    screenshotTooltip: 'Simpan gambar (.png)',
+    screenshotLabel: 'Ambil tangkapan layar',
+    exportModelTooltip: 'Ekspor sebagai model 3D (.glb) — untuk game dan program lain',
+    exportModelLabel: 'Ekspor model 3D',
+    newProjectConfirmTitle: 'Mulai proyek baru?',
+    newProjectConfirmMessage:
+      'Bangunan saat ini akan dihapus. Jika ingin menyimpannya, simpan proyek atau ambil tangkapan layar dulu.',
+    newProjectConfirmYes: 'Ya, hapus',
+  },
+  toast: {
+    projectSaved: 'Proyek disimpan ke file 💾',
+    screenshotSaved: 'Tangkapan layar disimpan 📸',
+    newProjectStarted: 'Proyek baru dimulai ✨',
+    projectOpened: 'Proyek dibuka! 🎉',
+    projectOpenError: 'Tidak bisa membuka file — apakah ini benar file .voxcel? 🤔',
+    modelExported: 'Model 3D disimpan ke file 📦',
+    allCleared: 'Semua terhapus 🧹',
+    challengeComplete: 'Selesai! Kamu membuat: {{title}} 🎉',
+  },
+  viewPresets: {
+    home: 'Tampilan biasa',
+    front: 'Tampilan depan',
+    top: 'Tampilan atas',
+  },
+  challenges: {
+    buttonLabel: 'Tantangan',
+    close: 'Tutup',
+    completedBadge: 'Selesai',
+    actionPlaying: 'Sedang main',
+    actionRetry: 'Coba lagi',
+    actionStart: 'Mulai',
+    sandboxMode: 'Mode bebas (tanpa tantangan)',
+    saveBeforeStartTitle: 'Simpan bangunan saat ini?',
+    saveBeforeStartMessage:
+      'Tantangan dimulai dengan kisi kosong — semua yang sudah kamu buat akan dihapus. Simpan bangunan ke file dulu?',
+    saveBeforeStartDiscard: 'Jangan simpan',
+    saveBeforeStartSave: 'Simpan dan mulai',
+    houseTitle: 'Rumah',
+    houseHint: 'Buat rumah dengan pintu, jendela, dan atap',
+    treeTitle: 'Pohon',
+    treeHint: 'Buat pohon yang rimbun',
+    amongUsTitle: 'Among Us',
+    amongUsHint: 'Buat karakter Among Us',
+  },
+  hint: {
+    show: 'Tampilkan petunjuk',
+    hide: 'Sembunyikan petunjuk',
+    label: 'Petunjuk',
+  },
+  welcome: {
+    title: 'Hai! 🐷',
+    message:
+      'Kami menyiapkan bentuk awal untukmu — babi dari balok-balok. Mau menyimpannya dan terus membangun, atau mulai dari kisi kosong?',
+    keepPig: 'Simpan babinya',
+    startNew: 'Proyek baru',
+  },
+  palette: {
+    red: 'Merah',
+    orange: 'Oranye',
+    yellow: 'Kuning',
+    green: 'Hijau',
+    cyan: 'Biru muda',
+    blue: 'Biru',
+    purple: 'Ungu',
+    pink: 'Merah muda',
+    brown: 'Cokelat',
+    white: 'Putih',
+    black: 'Hitam',
+    gray: 'Abu-abu',
+  },
+  project: {
+    defaultName: 'Bangunanku',
+  },
+  language: {
+    buttonLabel: 'Bahasa',
+  },
+}

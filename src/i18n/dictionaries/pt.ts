@@ -1,0 +1,107 @@
+import type { Translations } from '../types'
+
+export const pt: Translations = {
+  common: {
+    cancel: 'Não precisa',
+  },
+  toolbar: {
+    place: 'Adicionar bloco',
+    erase: 'Apagar bloco',
+    paint: 'Pintar',
+    undoTooltip: 'Desfazer (Ctrl+Z)',
+    undoLabel: 'Desfazer',
+    redoTooltip: 'Refazer (Ctrl+Y)',
+    redoLabel: 'Refazer',
+  },
+  sidePanel: {
+    clearAllTooltip: 'Apagar todos os blocos',
+    clearAllLabel: 'Apagar tudo',
+    clearAllConfirmTitle: 'Apagar tudo?',
+    clearAllConfirmMessage:
+      'Todos os blocos na grade serão removidos. Você pode desfazer isso com o botão «Desfazer».',
+    clearAllConfirmYes: 'Sim, apagar tudo',
+  },
+  fileMenu: {
+    newProjectTooltip: 'Começar um novo projeto (apaga a construção atual)',
+    newProjectLabel: 'Novo projeto',
+    saveTooltip: 'Salvar projeto (.voxcel)',
+    saveLabel: 'Salvar o projeto em um arquivo',
+    openTooltip: 'Abrir projeto (.voxcel)',
+    openLabel: 'Abrir um projeto de um arquivo',
+    screenshotTooltip: 'Salvar uma imagem (.png)',
+    screenshotLabel: 'Tirar uma captura de tela',
+    exportModelTooltip: 'Exportar como modelo 3D (.glb) — para jogos e outros programas',
+    exportModelLabel: 'Exportar modelo 3D',
+    newProjectConfirmTitle: 'Começar um novo projeto?',
+    newProjectConfirmMessage:
+      'A construção atual será apagada. Se quiser guardá-la, salve o projeto ou tire uma captura de tela antes.',
+    newProjectConfirmYes: 'Sim, apagar',
+  },
+  toast: {
+    projectSaved: 'Projeto salvo em um arquivo 💾',
+    screenshotSaved: 'Captura de tela salva 📸',
+    newProjectStarted: 'Novo projeto iniciado ✨',
+    projectOpened: 'Projeto aberto! 🎉',
+    projectOpenError: 'Não foi possível abrir o arquivo — é mesmo um arquivo .voxcel? 🤔',
+    modelExported: 'Modelo 3D salvo em um arquivo 📦',
+    allCleared: 'Tudo apagado 🧹',
+    challengeComplete: 'Pronto! Você construiu: {{title}} 🎉',
+  },
+  viewPresets: {
+    home: 'Vista padrão',
+    front: 'Vista frontal',
+    top: 'Vista de cima',
+  },
+  challenges: {
+    buttonLabel: 'Desafios',
+    close: 'Fechar',
+    completedBadge: 'Concluído',
+    actionPlaying: 'Jogando',
+    actionRetry: 'Tentar de novo',
+    actionStart: 'Começar',
+    sandboxMode: 'Modo livre (sem desafio)',
+    saveBeforeStartTitle: 'Salvar sua construção atual?',
+    saveBeforeStartMessage:
+      'O desafio começa em uma grade vazia — o que você já construiu será apagado. Salvar a construção em um arquivo antes?',
+    saveBeforeStartDiscard: 'Não salvar',
+    saveBeforeStartSave: 'Salvar e começar',
+    houseTitle: 'Casinha',
+    houseHint: 'Construa uma casinha com porta, janelas e telhado',
+    treeTitle: 'Arvorezinha',
+    treeHint: 'Construa uma arvorezinha frondosa',
+    amongUsTitle: 'Among Us',
+    amongUsHint: 'Construa um personagem do Among Us',
+  },
+  hint: {
+    show: 'Mostrar dica',
+    hide: 'Esconder dica',
+    label: 'Dica',
+  },
+  welcome: {
+    title: 'Oi! 🐷',
+    message:
+      'Preparamos uma figura inicial para você — um porquinho feito de blocos. Quer mantê-lo e continuar construindo, ou começar com uma grade vazia?',
+    keepPig: 'Manter o porquinho',
+    startNew: 'Novo projeto',
+  },
+  palette: {
+    red: 'Vermelho',
+    orange: 'Laranja',
+    yellow: 'Amarelo',
+    green: 'Verde',
+    cyan: 'Azul-claro',
+    blue: 'Azul',
+    purple: 'Roxo',
+    pink: 'Rosa',
+    brown: 'Marrom',
+    white: 'Branco',
+    black: 'Preto',
+    gray: 'Cinza',
+  },
+  project: {
+    defaultName: 'Minha construção',
+  },
+  language: {
+    buttonLabel: 'Idioma',
+  },
+}

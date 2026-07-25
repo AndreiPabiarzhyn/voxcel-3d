@@ -1,7 +1,9 @@
 import { ConfirmDialog } from '../../components/ConfirmDialog'
+import { useTranslations } from '../../i18n/useTranslations'
 import { useProjectStore } from '../../store/projectStore'
 
 export function WelcomeModal() {
+  const t = useTranslations()
   const showWelcome = useProjectStore((state) => state.showWelcome)
   const keepStarterPig = useProjectStore((state) => state.keepStarterPig)
   const dismissStarterPig = useProjectStore((state) => state.dismissStarterPig)
@@ -10,10 +12,10 @@ export function WelcomeModal() {
 
   return (
     <ConfirmDialog
-      title="Привет! 🐷"
-      message="Мы приготовили для тебя стартовую фигурку — свинку из кубиков. Оставить её и достраивать дальше, или начать с чистого листа?"
-      confirmLabel="Новый проект"
-      cancelLabel="Оставить свинку"
+      title={t.welcome.title}
+      message={t.welcome.message}
+      confirmLabel={t.welcome.startNew}
+      cancelLabel={t.welcome.keepPig}
       onConfirm={dismissStarterPig}
       onCancel={keepStarterPig}
     />

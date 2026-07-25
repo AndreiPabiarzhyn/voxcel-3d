@@ -1,0 +1,107 @@
+import type { Translations } from '../types'
+
+export const es: Translations = {
+  common: {
+    cancel: 'No hace falta',
+  },
+  toolbar: {
+    place: 'Añadir bloque',
+    erase: 'Borrar bloque',
+    paint: 'Pintar',
+    undoTooltip: 'Deshacer (Ctrl+Z)',
+    undoLabel: 'Deshacer',
+    redoTooltip: 'Rehacer (Ctrl+Y)',
+    redoLabel: 'Rehacer',
+  },
+  sidePanel: {
+    clearAllTooltip: 'Borrar todos los bloques',
+    clearAllLabel: 'Borrar todo',
+    clearAllConfirmTitle: '¿Borrar todo?',
+    clearAllConfirmMessage:
+      'Se eliminarán todos los bloques de la cuadrícula. Puedes deshacerlo con el botón «Deshacer».',
+    clearAllConfirmYes: 'Sí, borrar todo',
+  },
+  fileMenu: {
+    newProjectTooltip: 'Empezar un proyecto nuevo (borra la construcción actual)',
+    newProjectLabel: 'Nuevo proyecto',
+    saveTooltip: 'Guardar proyecto (.voxcel)',
+    saveLabel: 'Guardar el proyecto en un archivo',
+    openTooltip: 'Abrir proyecto (.voxcel)',
+    openLabel: 'Abrir un proyecto desde un archivo',
+    screenshotTooltip: 'Guardar una imagen (.png)',
+    screenshotLabel: 'Hacer una captura de pantalla',
+    exportModelTooltip: 'Exportar como modelo 3D (.glb) — para juegos y otros programas',
+    exportModelLabel: 'Exportar modelo 3D',
+    newProjectConfirmTitle: '¿Empezar un proyecto nuevo?',
+    newProjectConfirmMessage:
+      'La construcción actual se borrará. Si quieres conservarla, guarda el proyecto o haz una captura de pantalla primero.',
+    newProjectConfirmYes: 'Sí, borrar',
+  },
+  toast: {
+    projectSaved: 'Proyecto guardado en un archivo 💾',
+    screenshotSaved: 'Captura guardada 📸',
+    newProjectStarted: 'Nuevo proyecto iniciado ✨',
+    projectOpened: '¡Proyecto abierto! 🎉',
+    projectOpenError: 'No se pudo abrir el archivo — ¿seguro que es un archivo .voxcel? 🤔',
+    modelExported: 'Modelo 3D guardado en un archivo 📦',
+    allCleared: 'Todo borrado 🧹',
+    challengeComplete: '¡Listo! Construiste: {{title}} 🎉',
+  },
+  viewPresets: {
+    home: 'Vista normal',
+    front: 'Vista frontal',
+    top: 'Vista desde arriba',
+  },
+  challenges: {
+    buttonLabel: 'Retos',
+    close: 'Cerrar',
+    completedBadge: 'Listo',
+    actionPlaying: 'Jugando',
+    actionRetry: 'Otra vez',
+    actionStart: 'Empezar',
+    sandboxMode: 'Modo libre (sin reto)',
+    saveBeforeStartTitle: '¿Guardar tu construcción actual?',
+    saveBeforeStartMessage:
+      'El reto empieza con una cuadrícula vacía — se borrará lo que ya construiste. ¿Guardar la construcción en un archivo antes?',
+    saveBeforeStartDiscard: 'No guardar',
+    saveBeforeStartSave: 'Guardar y empezar',
+    houseTitle: 'Casita',
+    houseHint: 'Construye una casita con puerta, ventanas y tejado',
+    treeTitle: 'Arbolito',
+    treeHint: 'Construye un arbolito frondoso',
+    amongUsTitle: 'Among Us',
+    amongUsHint: 'Construye un personaje de Among Us',
+  },
+  hint: {
+    show: 'Mostrar pista',
+    hide: 'Ocultar pista',
+    label: 'Pista',
+  },
+  welcome: {
+    title: '¡Hola! 🐷',
+    message:
+      'Te preparamos una figura inicial — un cerdito hecho de bloques. ¿Quieres conservarlo y seguir construyendo, o empezar con una cuadrícula vacía?',
+    keepPig: 'Conservar el cerdito',
+    startNew: 'Nuevo proyecto',
+  },
+  palette: {
+    red: 'Rojo',
+    orange: 'Naranja',
+    yellow: 'Amarillo',
+    green: 'Verde',
+    cyan: 'Celeste',
+    blue: 'Azul',
+    purple: 'Morado',
+    pink: 'Rosa',
+    brown: 'Marrón',
+    white: 'Blanco',
+    black: 'Negro',
+    gray: 'Gris',
+  },
+  project: {
+    defaultName: 'Mi construcción',
+  },
+  language: {
+    buttonLabel: 'Idioma',
+  },
+}

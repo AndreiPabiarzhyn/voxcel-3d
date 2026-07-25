@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { CHALLENGES } from '../features/challenges/challengeData'
 import { getChallengeProgress } from '../features/challenges/challengeProgress'
 import { useChallengeStore } from '../features/challenges/challengeStore'
+import { getTranslations } from '../i18n/useTranslations'
 import { playChallengeCompleteSound } from '../lib/audio/sounds'
 import { useToastStore } from '../lib/toast/toastStore'
 import { parseVoxelKey } from '../lib/voxel/key'
@@ -42,7 +43,9 @@ export function ChallengeGhost() {
     if (filled === total && !completedChallengeIds.includes(challenge.id)) {
       completeChallenge(challenge.id)
       playChallengeCompleteSound()
-      useToastStore.getState().show(`Готово! Ты собрал: ${challenge.title} 🎉`, 'success')
+      const t = getTranslations()
+      const title = t.challenges[challenge.titleKey]
+      useToastStore.getState().show(t.toast.challengeComplete.replace('{{title}}', title), 'success')
     }
   }, [challenge, filled, total, completedChallengeIds, completeChallenge])
 

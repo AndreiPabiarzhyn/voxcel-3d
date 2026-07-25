@@ -1,6 +1,7 @@
 import { useRef, useState, type ChangeEvent } from 'react'
 import { ConfirmDialog } from '../../components/ConfirmDialog'
 import { Tooltip } from '../../components/Tooltip'
+import { getTranslations, useTranslations } from '../../i18n/useTranslations'
 import { useChallengeStore } from '../challenges/challengeStore'
 import { downloadProjectFile } from '../../lib/storage/exportProjectFile'
 import { exportVoxelsAsGlb } from '../../lib/voxel/exportModel'
@@ -20,21 +21,22 @@ function isVoxelProject(value: unknown): value is VoxelProject {
 function handleScreenshot() {
   const { projectName } = useProjectStore.getState()
   captureScreenshot(projectName)
-  useToastStore.getState().show('Скриншот сохранён 📸', 'success')
+  useToastStore.getState().show(getTranslations().toast.screenshotSaved, 'success')
 }
 
 function handleExportProject() {
   downloadProjectFile(useProjectStore.getState().toProject())
-  useToastStore.getState().show('Проект сохранён в файл 💾', 'success')
+  useToastStore.getState().show(getTranslations().toast.projectSaved, 'success')
 }
 
 function handleNewProject() {
   useProjectStore.getState().newProject()
   useChallengeStore.getState().exitChallenge()
-  useToastStore.getState().show('Новый проект начат ✨', 'success')
+  useToastStore.getState().show(getTranslations().toast.newProjectStarted, 'success')
 }
 
 export function FileMenu() {
+  const t = useTranslations()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [exportingModel, setExportingModel] = useState(false)
   const [confirmingNew, setConfirmingNew] = useState(false)
@@ -48,11 +50,9 @@ export function FileMenu() {
       const project = JSON.parse(await file.text())
       if (!isVoxelProject(project)) throw new Error('not a voxcel project')
       useProjectStore.getState().loadProject(project)
-      useToastStore.getState().show('Проект открыт! 🎉', 'success')
+      useToastStore.getState().show(t.toast.projectOpened, 'success')
     } catch {
-      useToastStore
-        .getState()
-        .show('Не получилось открыть файл — это точно файл .voxcel? 🤔', 'error')
+      useToastStore.getState().show(t.toast.projectOpenError, 'error')
     }
   }
 
@@ -61,7 +61,7 @@ export function FileMenu() {
     setExportingModel(true)
     try {
       await exportVoxelsAsGlb(voxels, projectName)
-      useToastStore.getState().show('3D-модель сохранена в файл 📦', 'success')
+      useToastStore.getState().show(t.toast.modelExported, 'success')
     } finally {
       setExportingModel(false)
     }
@@ -69,56 +69,56 @@ export function FileMenu() {
 
   return (
     <div className="file-menu hud-panel">
-      <Tooltip label="Начать новый проект (стереть текущую постройку)">
+      <Tooltip label={t.fileMenu.newProjectTooltip}>
         <button
           type="button"
           className="hud-button"
           onClick={() => setConfirmingNew(true)}
-          aria-label="Начать новый проект"
+          aria-label={t.fileMenu.newProjectLabel}
         >
           <NewProjectIcon size={20} />
         </button>
       </Tooltip>
       <div className="hud-divider" />
-      <Tooltip label="Сохранить проект (.voxcel)">
+      <Tooltip label={t.fileMenu.saveTooltip}>
         <button
           type="button"
           className="hud-button"
           onClick={handleExportProject}
-          aria-label="Сохранить проект в файл"
+          aria-label={t.fileMenu.saveLabel}
         >
           <DownloadIcon size={20} />
         </button>
       </Tooltip>
-      <Tooltip label="Открыть проект (.voxcel)">
+      <Tooltip label={t.fileMenu.openTooltip}>
         <button
           type="button"
           className="hud-button"
           onClick={() => fileInputRef.current?.click()}
-          aria-label="Открыть проект из файла"
+          aria-label={t.fileMenu.openLabel}
         >
           <FolderIcon size={20} />
         </button>
       </Tooltip>
       <div className="hud-divider" />
-      <Tooltip label="Сохранить картинку (.png)">
+      <Tooltip label={t.fileMenu.screenshotTooltip}>
         <button
           type="button"
           className="hud-button"
           onClick={handleScreenshot}
-          aria-label="Сделать скриншот"
+          aria-label={t.fileMenu.screenshotLabel}
         >
           <ScreenshotIcon size={20} />
         </button>
       </Tooltip>
       <div className="hud-divider" />
-      <Tooltip label="Экспортировать как 3D-модель (.glb) — для игр и других программ">
+      <Tooltip label={t.fileMenu.exportModelTooltip}>
         <button
           type="button"
           className="hud-button"
           onClick={handleExportModel}
           disabled={exportingModel}
-          aria-label="Экспортировать 3D-модель"
+          aria-label={t.fileMenu.exportModelLabel}
         >
           <ExportModelIcon size={20} />
         </button>
@@ -132,10 +132,10 @@ export function FileMenu() {
       />
       {confirmingNew && (
         <ConfirmDialog
-          title="Начать новый проект?"
-          message="Текущая постройка будет стёрта. Если хочешь сохранить её — сначала нажми «Сохранить проект» или сделай скриншот."
-          confirmLabel="Да, стереть"
-          cancelLabel="Не надо"
+          title={t.fileMenu.newProjectConfirmTitle}
+          message={t.fileMenu.newProjectConfirmMessage}
+          confirmLabel={t.fileMenu.newProjectConfirmYes}
+          cancelLabel={t.common.cancel}
           onConfirm={() => {
             handleNewProject()
             setConfirmingNew(false)

@@ -12,14 +12,16 @@ step after Minecraft-skin and pixel-art style tools for the same audience.
 - **Undo / redo**, keyboard shortcuts included.
 - **Camera controls** — orbit, pan (right-click drag), zoom, plus one-click
   front/top/reset view presets (a true straight-down top view included).
-- **Challenges** — a handful of small guided builds (house, tree, mushroom)
-  with a translucent "ghost" overlay in the grid showing exactly what's left
-  to place, and automatic completion detection.
+- **Challenges** — a handful of small guided builds (house, tree, an Among Us
+  character) with a translucent "ghost" overlay in the grid showing exactly
+  what's left to place, a hint toggle, and automatic completion detection.
 - **Save your work**:
   - `.voxcel` — a re-editable JSON project file (open it again later).
   - `.glb` — a real 3D model export (drop it into a game engine).
   - `.png` — a quick screenshot of your build.
   - Autosave to the browser's local storage, so a refresh never loses work.
+- **8 languages** — English (default), Polski, Italiano, Español, Türkçe,
+  Русский, Português, Bahasa Indonesia. Switch anytime from the globe button.
 - Local-first: no accounts, no backend, nothing leaves your browser.
 
 ## Tech stack

@@ -1,0 +1,107 @@
+import type { Translations } from '../types'
+
+export const it: Translations = {
+  common: {
+    cancel: 'Non serve',
+  },
+  toolbar: {
+    place: 'Aggiungi blocco',
+    erase: 'Cancella blocco',
+    paint: 'Colora',
+    undoTooltip: 'Annulla (Ctrl+Z)',
+    undoLabel: 'Annulla',
+    redoTooltip: 'Ripeti (Ctrl+Y)',
+    redoLabel: 'Ripeti',
+  },
+  sidePanel: {
+    clearAllTooltip: 'Cancella tutti i blocchi',
+    clearAllLabel: 'Cancella tutto',
+    clearAllConfirmTitle: 'Cancellare tutto?',
+    clearAllConfirmMessage:
+      'Tutti i blocchi sulla griglia verranno rimossi. Puoi annullare con il pulsante «Annulla».',
+    clearAllConfirmYes: 'Sì, cancella tutto',
+  },
+  fileMenu: {
+    newProjectTooltip: 'Inizia un nuovo progetto (cancella la costruzione attuale)',
+    newProjectLabel: 'Nuovo progetto',
+    saveTooltip: 'Salva progetto (.voxcel)',
+    saveLabel: "Salva il progetto in un file",
+    openTooltip: 'Apri progetto (.voxcel)',
+    openLabel: 'Apri un progetto da file',
+    screenshotTooltip: "Salva un'immagine (.png)",
+    screenshotLabel: 'Fai uno screenshot',
+    exportModelTooltip: 'Esporta come modello 3D (.glb) — per giochi e altri programmi',
+    exportModelLabel: 'Esporta modello 3D',
+    newProjectConfirmTitle: 'Iniziare un nuovo progetto?',
+    newProjectConfirmMessage:
+      'La costruzione attuale verrà cancellata. Se vuoi conservarla, salva prima il progetto o fai uno screenshot.',
+    newProjectConfirmYes: 'Sì, cancella',
+  },
+  toast: {
+    projectSaved: 'Progetto salvato in un file 💾',
+    screenshotSaved: 'Screenshot salvato 📸',
+    newProjectStarted: 'Nuovo progetto iniziato ✨',
+    projectOpened: 'Progetto aperto! 🎉',
+    projectOpenError: "Impossibile aprire il file — è davvero un file .voxcel? 🤔",
+    modelExported: 'Modello 3D salvato in un file 📦',
+    allCleared: 'Tutto cancellato 🧹',
+    challengeComplete: 'Fatto! Hai costruito: {{title}} 🎉',
+  },
+  viewPresets: {
+    home: 'Vista predefinita',
+    front: 'Vista frontale',
+    top: "Vista dall'alto",
+  },
+  challenges: {
+    buttonLabel: 'Sfide',
+    close: 'Chiudi',
+    completedBadge: 'Fatto',
+    actionPlaying: 'In corso',
+    actionRetry: 'Riprova',
+    actionStart: 'Inizia',
+    sandboxMode: 'Modalità libera (senza sfida)',
+    saveBeforeStartTitle: 'Salvare la costruzione attuale?',
+    saveBeforeStartMessage:
+      'La sfida inizia con una griglia vuota — quello che hai già costruito verrà cancellato. Vuoi salvare la costruzione in un file prima?',
+    saveBeforeStartDiscard: 'Non salvare',
+    saveBeforeStartSave: 'Salva e inizia',
+    houseTitle: 'Casetta',
+    houseHint: 'Costruisci una casetta con porta, finestre e tetto',
+    treeTitle: 'Alberello',
+    treeHint: 'Costruisci un alberello folto',
+    amongUsTitle: 'Among Us',
+    amongUsHint: 'Costruisci un personaggio di Among Us',
+  },
+  hint: {
+    show: 'Mostra suggerimento',
+    hide: 'Nascondi suggerimento',
+    label: 'Suggerimento',
+  },
+  welcome: {
+    title: 'Ciao! 🐷',
+    message:
+      'Abbiamo preparato per te una figura di partenza — un maialino di blocchi. Vuoi tenerlo e continuare a costruire, o iniziare da una griglia vuota?',
+    keepPig: 'Tieni il maialino',
+    startNew: 'Nuovo progetto',
+  },
+  palette: {
+    red: 'Rosso',
+    orange: 'Arancione',
+    yellow: 'Giallo',
+    green: 'Verde',
+    cyan: 'Azzurro',
+    blue: 'Blu',
+    purple: 'Viola',
+    pink: 'Rosa',
+    brown: 'Marrone',
+    white: 'Bianco',
+    black: 'Nero',
+    gray: 'Grigio',
+  },
+  project: {
+    defaultName: 'La mia costruzione',
+  },
+  language: {
+    buttonLabel: 'Lingua',
+  },
+}

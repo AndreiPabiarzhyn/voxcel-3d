@@ -1,0 +1,47 @@
+.language-button {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 10;
+}
+
+.language-button__popover {
+  position: fixed;
+  z-index: 40;
+}
+
+.language-button__card {
+  min-width: 168px;
+  align-items: stretch;
+}
+
+.language-button__option {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 14px;
+  text-align: left;
+  padding: 10px 14px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease;
+}
+
+.language-button__option:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+}
+
+.language-button__option--active {
+  background: rgba(70, 201, 255, 0.18);
+  color: var(--accent);
+}
+
+.language-button__option:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}

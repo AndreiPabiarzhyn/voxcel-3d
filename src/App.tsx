@@ -1,6 +1,7 @@
 import { ChallengePanel } from './features/challenges/ChallengePanel'
 import { HintButton } from './features/challenges/HintButton'
 import './App.css'
+import { LanguageButton } from './components/LanguageButton'
 import { Credit } from './features/editor/Credit'
 import { EditorHud } from './features/editor/EditorHud'
 import { FileMenu } from './features/editor/FileMenu'
@@ -22,6 +23,7 @@ function App() {
       <FileMenu />
       <ViewPresets />
       <HintButton />
+      <LanguageButton />
       <Credit />
       <ToastHost />
       <ChallengePanel />
