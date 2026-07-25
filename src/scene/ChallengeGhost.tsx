@@ -1,5 +1,6 @@
 import { Edges } from '@react-three/drei'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
+import { Color } from 'three'
 import { CHALLENGES } from '../features/challenges/challengeData'
 import { getChallengeProgress } from '../features/challenges/challengeProgress'
 import { useChallengeStore } from '../features/challenges/challengeStore'
@@ -35,6 +36,22 @@ export function ChallengeGhost() {
     }
   }, [challenge, filled, total, completedChallengeIds, completeChallenge])
 
+  // Softened toward white and much more transparent than a real cube —
+  // this is a hint overlaid on the actual build, not a solid object, and
+  // at full target-color opacity it visually competed with (and hid)
+  // the real cubes being placed around it.
+  const ghostColors = useMemo(() => {
+    const cache = new Map<string, string>()
+    for (const item of CHALLENGES) {
+      for (const data of Object.values(item.target)) {
+        if (!cache.has(data.color)) {
+          cache.set(data.color, `#${new Color(data.color).lerp(new Color('#ffffff'), 0.7).getHexString()}`)
+        }
+      }
+    }
+    return cache
+  }, [])
+
   if (!challenge) return null
 
   return (
@@ -42,16 +59,17 @@ export function ChallengeGhost() {
       {Object.entries(challenge.target).map(([key, data]) => {
         if (voxels[key as VoxelKey]) return null
         const [x, y, z] = parseVoxelKey(key as VoxelKey)
+        const ghostColor = ghostColors.get(data.color) ?? '#ffffff'
         return (
           <mesh key={key} position={[x, y, z]} raycast={() => null}>
             <boxGeometry args={[1, 1, 1]} />
             <meshStandardMaterial
-              color={data.color}
+              color={ghostColor}
               transparent
-              opacity={0.25}
+              opacity={0.12}
               depthWrite={false}
             />
-            <Edges color={data.color} />
+            <Edges color={ghostColor} />
           </mesh>
         )
       })}

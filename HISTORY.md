@@ -1319,3 +1319,24 @@ Old `mushroom.svg` deleted; new `amongus.svg` added under
   Please check the default view now frames the pig/grid center properly,
   and that the new house/Among Us target shapes actually read as
   intended in the 3D view.
+
+## 2026-07-25 — softened the challenge ghost overlay
+
+Andrei's message was terse and unaccompanied by a screenshot this time
+("Белее, прозрачнее сделать, иначе мешает" — "make it whiter, more
+transparent, otherwise it's in the way"), with no explicit subject. Best
+guess given what we'd just been testing (the house/Among Us challenge
+targets): the translucent ghost-overlay cubes in `ChallengeGhost.tsx`,
+which render at the target's actual color and 0.25 opacity — solid
+enough to visually compete with real placed cubes while building against
+a challenge target. **Flagged this assumption explicitly to Andrei** in
+case the actual target was something else.
+
+- `ChallengeGhost.tsx`: each ghost cube's color is now blended 70% toward
+  white (`new Color(target).lerp(new Color('#ffffff'), 0.7)`, memoized
+  per unique target color across all challenges) instead of the raw
+  target color, and opacity dropped from 0.25 to 0.12 — reads as a soft
+  white-tinted hint rather than a solid, visually competing block.
+- `npm run build` / `npm run lint` clean. Not visually verified by me —
+  please confirm this is actually what felt "in the way," and that it's
+  subtle enough now without losing the hint entirely.
