@@ -1,6 +1,4 @@
-import { Edges } from '@react-three/drei'
-import { useEffect, useMemo } from 'react'
-import { Color } from 'three'
+import { useEffect } from 'react'
 import { CHALLENGES } from '../features/challenges/challengeData'
 import { getChallengeProgress } from '../features/challenges/challengeProgress'
 import { useChallengeStore } from '../features/challenges/challengeStore'
@@ -15,6 +13,15 @@ import type { VoxelKey } from '../types/project'
  * challenge still needs — a cube disappears the moment a real one is
  * placed there. No image/reference needed since the "picture" is just
  * more voxel data, rendered in the same space the kid is building in.
+ *
+ * Plain transparent fill only, no wireframe outline: a per-cube <Edges>
+ * looked fine for one cube, but a target shape is dozens of adjacent
+ * ghost cubes, and every shared internal face between neighbors got its
+ * own outline too — the result was a dense, glowing lattice of lines
+ * (worst in the middle of the shape, where the most cubes touch), not a
+ * soft hint. The color is the target's real color, dimmed way down by
+ * opacity alone — dropping it toward white as well (an earlier attempt)
+ * threw away the "what color goes here" hint along with the harshness.
  */
 export function ChallengeGhost() {
   const activeChallengeId = useChallengeStore((state) => state.activeChallengeId)
@@ -36,22 +43,6 @@ export function ChallengeGhost() {
     }
   }, [challenge, filled, total, completedChallengeIds, completeChallenge])
 
-  // Softened toward white and much more transparent than a real cube —
-  // this is a hint overlaid on the actual build, not a solid object, and
-  // at full target-color opacity it visually competed with (and hid)
-  // the real cubes being placed around it.
-  const ghostColors = useMemo(() => {
-    const cache = new Map<string, string>()
-    for (const item of CHALLENGES) {
-      for (const data of Object.values(item.target)) {
-        if (!cache.has(data.color)) {
-          cache.set(data.color, `#${new Color(data.color).lerp(new Color('#ffffff'), 0.7).getHexString()}`)
-        }
-      }
-    }
-    return cache
-  }, [])
-
   if (!challenge) return null
 
   return (
@@ -59,17 +50,15 @@ export function ChallengeGhost() {
       {Object.entries(challenge.target).map(([key, data]) => {
         if (voxels[key as VoxelKey]) return null
         const [x, y, z] = parseVoxelKey(key as VoxelKey)
-        const ghostColor = ghostColors.get(data.color) ?? '#ffffff'
         return (
           <mesh key={key} position={[x, y, z]} raycast={() => null}>
             <boxGeometry args={[1, 1, 1]} />
             <meshStandardMaterial
-              color={ghostColor}
+              color={data.color}
               transparent
-              opacity={0.12}
+              opacity={0.2}
               depthWrite={false}
             />
-            <Edges color={ghostColor} />
           </mesh>
         )
       })}

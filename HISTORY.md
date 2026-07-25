@@ -1340,3 +1340,32 @@ case the actual target was something else.
 - `npm run build` / `npm run lint` clean. Not visually verified by me —
   please confirm this is actually what felt "in the way," and that it's
   subtle enough now without losing the hint entirely.
+
+## 2026-07-25 — the ghost overlay fix from an hour ago was itself the bug
+
+Andrei's screenshot of the Among Us/house ghost shape showed a dense
+mesh of glowing white wireframe lines, worst in the middle — reacted
+sharply ("что это за говно"). Also asked to bring back the color hint
+(what color each part is meant to be).
+
+Root cause: the *previous* change (blend toward white + keep `<Edges>`)
+was the actual regression. `<Edges>` draws a full wireframe outline
+per individual unit cube; a challenge target is dozens of adjacent
+ghost cubes, so every shared internal face between two touching ghost
+cubes got its own outline too, on both sides — at the white-blended
+color, that's a dense lattice of near-white lines, densest exactly
+where the most cubes touch (the middle of the shape). Whitening the
+fill made the problem worse, not better, since the edges got brighter
+too.
+
+Fix: removed the `<Edges>` outline entirely — plain transparent fill
+only. Reverted the color back to the target's real color (undoing the
+white-blend from the last change, per "верни подсветку цвета" — bring
+the color hint back) and set opacity to 0.2 (between the original 0.25
+and the too-faint 0.12 attempt), since without the outline crutch the
+fill alone needs to be visible enough to still convey "this part should
+be red/brown/etc."
+
+`npm run build` / `npm run lint` clean. Not visually verified by me —
+please confirm the mesh of lines is gone and the color hint reads
+clearly again without feeling solid/in-the-way.
