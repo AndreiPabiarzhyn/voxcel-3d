@@ -3,7 +3,6 @@ import { ConfirmDialog } from '../../components/ConfirmDialog'
 import { ChallengesButton } from '../challenges/ChallengesButton'
 import { useToastStore } from '../../lib/toast/toastStore'
 import { useProjectStore } from '../../store/projectStore'
-import { Palette } from './Palette'
 import './SidePanel.css'
 
 const CLEAR_ICON = `${import.meta.env.BASE_URL}icons/actions/clear.svg`
@@ -19,8 +18,6 @@ export function SidePanel() {
 
   return (
     <div className="side-panel hud-panel hud-panel--column">
-      <Palette />
-      <div className="hud-divider--h" />
       <ChallengesButton />
       <button
         type="button"

@@ -995,3 +995,52 @@ from the name):
   itself not verified by me** — no screenshot tool here; please look at the
   new left panel and bottom bar and confirm the split reads right and
   nothing overlaps at your window size.
+
+## 2026-07-25 — clearer erase icon, tool reorder, paint color popover
+
+Andrei's message opened with another keyboard-layout typo this time in
+plain text (not garbled, just typos — "потo", "покарсить", "проподает"),
+asking for two things:
+
+1. **Erase icon still unclear.** The sponge (🧽) was a plausible "wipe
+   clean" metaphor but a stretch for "delete one placed cube." Swapped it
+   for Twemoji's cross mark (❌, U+274C) — a big bold red X, about as fast
+   to read as an icon gets, and the standard "remove/delete this" symbol
+   in essentially every kids' app already. Same file
+   (`public/icons/actions/erase.svg`), just different source SVG.
+
+2. **Toolbar reorder + color picker redesign.** Requested order is
+   place → erase → paint (was place → paint → erase) — done, plain
+   reorder in `Toolbar.tsx`.
+   The bigger change: the always-visible color swatches (which had just
+   moved into the left `SidePanel` last session) move again — this time
+   into a **popover anchored to the Paint button itself**, matching
+   exactly what Andrei described: click "Покрасить" → a small card of
+   color circles appears above the button; picking one selects the color
+   and closes the popover; moving the mouse off the whole area (button +
+   popover) also closes it, without picking anything.
+   - `Palette` now takes an optional `onSelect` callback (fired after
+     `setColor`) so a caller can react to a pick; `SidePanel` no longer
+     renders `Palette` at all — it's just `ChallengesButton` + "Стереть
+     всё" now, colors live only in the toolbar popover.
+   - The trickiest part was the "closes on mouse leave" requirement: a
+     naive absolutely-positioned popover with a visual gap above the
+     button creates a dead pixel strip that belongs to neither element,
+     so the cursor traveling from button to popover would hit that gap,
+     get treated as "left the wrapper," and close the popover before the
+     mouse ever reaches it (`mouseleave`/`mouseenter` are resolved by DOM
+     ancestry of the actual hit-tested element under the cursor, not by
+     bounding-box math — a transparent gap with nothing rendered in it
+     belongs to whatever's behind it, not to the wrapper). Fixed by
+     giving the popover wrapper an invisible `padding-bottom` buffer
+     (`.tool-color-picker__popover`) so the wrapper's own hit-testable box
+     reaches all the way down to touch the button — no dead gap, the
+     visual spacing comes from padding *inside* an element instead of
+     empty space *between* two elements.
+   - Palette's own grid went from 2 columns (tall, meant for the narrow
+     vertical side panel) to 4 columns (a compact 4×3 card, better suited
+     to floating above a button in the bottom-center toolbar).
+- `npm run build` and `npm run lint` clean.
+- Not visually re-verified by me (no screenshot tool) — please confirm
+  the popover actually stays open while moving the mouse from the button
+  up into the color grid, and that the new erase icon reads clearly.

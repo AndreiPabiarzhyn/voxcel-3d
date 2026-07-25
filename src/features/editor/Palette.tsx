@@ -2,7 +2,11 @@ import { useProjectStore } from '../../store/projectStore'
 import { PALETTE_COLORS } from './paletteColors'
 import './Palette.css'
 
-export function Palette() {
+interface PaletteProps {
+  onSelect?: (hex: string) => void
+}
+
+export function Palette({ onSelect }: PaletteProps) {
   const selectedColor = useProjectStore((state) => state.selectedColor)
   const setColor = useProjectStore((state) => state.setColor)
 
@@ -16,7 +20,10 @@ export function Palette() {
             selectedColor === hex ? 'palette__swatch palette__swatch--active' : 'palette__swatch'
           }
           style={{ backgroundColor: hex }}
-          onClick={() => setColor(hex)}
+          onClick={() => {
+            setColor(hex)
+            onSelect?.(hex)
+          }}
           aria-label={name}
           title={name}
           aria-pressed={selectedColor === hex}

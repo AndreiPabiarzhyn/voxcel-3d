@@ -3,3 +3,23 @@
   flex-shrink: 0;
   gap: 8px;
 }
+
+.tool-color-picker {
+  position: relative;
+}
+
+/* This wrapper's own box (not just the visible card) reaches down to
+   touch the paint button — an invisible `padding-bottom` buffer, not a
+   real gap — so the mouse can travel from the button up into the card
+   without ever leaving `.tool-color-picker`'s hover region and closing it
+   early (a true empty gap between two elements is neither element, so
+   crossing it would fire mouseleave before the pointer reaches the card). */
+.tool-color-picker__popover {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding-bottom: 8px;
+  z-index: 15;
+}
+
