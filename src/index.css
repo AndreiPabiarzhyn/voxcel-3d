@@ -1,0 +1,76 @@
+/* Self-hosted (not Google Fonts CDN) so a kid's browser never sends its IP
+   to a third party just to render text — same local-first spirit as the
+   rest of the app. Nunito is a variable font: one file covers weights
+   400-900, so a single @font-face per script subset is all that's needed. */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url('/fonts/nunito-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+    U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url('/fonts/nunito-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+:root {
+  color-scheme: dark;
+
+  --font-sans:
+    'Nunito',
+    'Segoe UI',
+    system-ui,
+    sans-serif;
+
+  --bg: #10141d;
+  --surface: #1b2130;
+  --surface-raised: #232a3d;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --text: #eef1f8;
+  --text-dim: rgba(238, 241, 248, 0.64);
+
+  --accent: #46c9ff;
+  --accent-deep: #1b8fc9;
+  --gold: #ffcf4d;
+  --gold-deep: #cf9a1f;
+  --leaf: #5cff8d;
+  --leaf-deep: #2bcf65;
+  --coral: #ff7a7a;
+  --coral-deep: #d84343;
+
+  --radius-lg: 24px;
+  --radius-md: 16px;
+  --radius-sm: 12px;
+  --radius-pill: 999px;
+
+  --shadow-panel: 0 20px 50px rgba(3, 5, 10, 0.55);
+  --shadow-float: 0 10px 26px rgba(3, 5, 10, 0.4);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+}

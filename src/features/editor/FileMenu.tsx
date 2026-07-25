@@ -1,0 +1,150 @@
+import { useRef, useState, type ChangeEvent } from 'react'
+import { ConfirmDialog } from '../../components/ConfirmDialog'
+import { useChallengeStore } from '../challenges/challengeStore'
+import { exportVoxelsAsGlb } from '../../lib/voxel/exportModel'
+import { useToastStore } from '../../lib/toast/toastStore'
+import { captureScreenshot } from '../../scene/screenshotController'
+import { useProjectStore } from '../../store/projectStore'
+import type { VoxelProject } from '../../types/project'
+import './FileMenu.css'
+import { DownloadIcon, ExportModelIcon, FolderIcon, NewProjectIcon, ScreenshotIcon } from './icons'
+
+function isVoxelProject(value: unknown): value is VoxelProject {
+  if (!value || typeof value !== 'object') return false
+  const candidate = value as Partial<VoxelProject>
+  return typeof candidate.gridSize === 'number' && typeof candidate.voxels === 'object'
+}
+
+function handleScreenshot() {
+  const { projectName } = useProjectStore.getState()
+  captureScreenshot(projectName)
+  useToastStore.getState().show('Скриншот сохранён 📸', 'success')
+}
+
+function handleExportProject() {
+  const project = useProjectStore.getState().toProject()
+  const blob = new Blob([JSON.stringify(project, null, 2)], {
+    type: 'application/json',
+  })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = `${project.name || 'voxcel-project'}.voxcel`
+  link.click()
+  URL.revokeObjectURL(url)
+  useToastStore.getState().show('Проект сохранён в файл 💾', 'success')
+}
+
+function handleNewProject() {
+  useProjectStore.getState().newProject()
+  useChallengeStore.getState().exitChallenge()
+  useToastStore.getState().show('Новый проект начат ✨', 'success')
+}
+
+export function FileMenu() {
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [exportingModel, setExportingModel] = useState(false)
+  const [confirmingNew, setConfirmingNew] = useState(false)
+
+  async function handleImport(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    if (!file) return
+
+    try {
+      const project = JSON.parse(await file.text())
+      if (!isVoxelProject(project)) throw new Error('not a voxcel project')
+      useProjectStore.getState().loadProject(project)
+      useToastStore.getState().show('Проект открыт! 🎉', 'success')
+    } catch {
+      useToastStore
+        .getState()
+        .show('Не получилось открыть файл — это точно файл .voxcel? 🤔', 'error')
+    }
+  }
+
+  async function handleExportModel() {
+    const { voxels, projectName } = useProjectStore.getState()
+    setExportingModel(true)
+    try {
+      await exportVoxelsAsGlb(voxels, projectName)
+      useToastStore.getState().show('3D-модель сохранена в файл 📦', 'success')
+    } finally {
+      setExportingModel(false)
+    }
+  }
+
+  return (
+    <div className="file-menu hud-panel">
+      <button
+        type="button"
+        className="hud-button"
+        onClick={() => setConfirmingNew(true)}
+        aria-label="Начать новый проект"
+        title="Начать новый проект (стереть текущую постройку)"
+      >
+        <NewProjectIcon size={20} />
+      </button>
+      <div className="hud-divider" />
+      <button
+        type="button"
+        className="hud-button"
+        onClick={handleExportProject}
+        aria-label="Сохранить проект в файл"
+        title="Сохранить проект (.voxcel)"
+      >
+        <DownloadIcon size={20} />
+      </button>
+      <button
+        type="button"
+        className="hud-button"
+        onClick={() => fileInputRef.current?.click()}
+        aria-label="Открыть проект из файла"
+        title="Открыть проект (.voxcel)"
+      >
+        <FolderIcon size={20} />
+      </button>
+      <div className="hud-divider" />
+      <button
+        type="button"
+        className="hud-button"
+        onClick={handleScreenshot}
+        aria-label="Сделать скриншот"
+        title="Сохранить картинку (.png)"
+      >
+        <ScreenshotIcon size={20} />
+      </button>
+      <div className="hud-divider" />
+      <button
+        type="button"
+        className="hud-button"
+        onClick={handleExportModel}
+        disabled={exportingModel}
+        aria-label="Экспортировать 3D-модель"
+        title="Экспортировать как 3D-модель (.glb) — для игр и других программ"
+      >
+        <ExportModelIcon size={20} />
+      </button>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".voxcel,application/json"
+        onChange={handleImport}
+        style={{ display: 'none' }}
+      />
+      {confirmingNew && (
+        <ConfirmDialog
+          title="Начать новый проект?"
+          message="Текущая постройка будет стёрта. Если хочешь сохранить её — сначала нажми «Сохранить проект» или сделай скриншот."
+          confirmLabel="Да, стереть"
+          cancelLabel="Не надо"
+          onConfirm={() => {
+            handleNewProject()
+            setConfirmingNew(false)
+          }}
+          onCancel={() => setConfirmingNew(false)}
+        />
+      )}
+    </div>
+  )
+}

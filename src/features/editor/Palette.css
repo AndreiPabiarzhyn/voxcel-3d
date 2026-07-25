@@ -1,0 +1,34 @@
+.palette {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.palette__swatch {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 3px solid var(--border-strong);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  padding: 0;
+  transition:
+    transform 0.1s ease,
+    border-color 0.15s ease;
+}
+
+.palette__swatch:hover {
+  transform: scale(1.08);
+}
+
+.palette__swatch--active {
+  border-color: #ffffff;
+  transform: scale(1.12);
+}
+
+.palette__swatch:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}

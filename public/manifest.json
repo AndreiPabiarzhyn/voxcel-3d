@@ -1,0 +1,14 @@
+{
+  "name": "Voxcel 3D — воксельный редактор",
+  "short_name": "Voxcel 3D",
+  "description": "Собирай 3D-модели из кубиков и выполняй весёлые задания",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#1b2130",
+  "theme_color": "#1b2130",
+  "orientation": "landscape",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

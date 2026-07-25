@@ -1,0 +1,27 @@
+import { ChallengePanel } from './features/challenges/ChallengePanel'
+import './App.css'
+import { Credit } from './features/editor/Credit'
+import { EditorHud } from './features/editor/EditorHud'
+import { FileMenu } from './features/editor/FileMenu'
+import { ToastHost } from './features/editor/ToastHost'
+import { useHistoryShortcuts } from './features/editor/useHistoryShortcuts'
+import { ViewPresets } from './features/editor/ViewPresets'
+import { Scene } from './scene/Scene'
+
+function App() {
+  useHistoryShortcuts()
+
+  return (
+    <div className="app">
+      <Scene />
+      <EditorHud />
+      <FileMenu />
+      <ViewPresets />
+      <Credit />
+      <ToastHost />
+      <ChallengePanel />
+    </div>
+  )
+}
+
+export default App

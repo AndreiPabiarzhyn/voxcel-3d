@@ -1,0 +1,8 @@
+.view-presets {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 10;
+  max-width: calc(100vw - 24px);
+  overflow-x: auto;
+}
