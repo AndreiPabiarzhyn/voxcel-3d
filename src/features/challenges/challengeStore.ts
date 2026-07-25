@@ -24,18 +24,25 @@ interface ChallengeState {
   activeChallengeId: string | null
   completedChallengeIds: string[]
   panelOpen: boolean
+  hintVisible: boolean
   startChallenge: (id: string) => void
   exitChallenge: () => void
   completeChallenge: (id: string) => void
   openPanel: () => void
   closePanel: () => void
+  toggleHint: () => void
 }
 
 export const useChallengeStore = create<ChallengeState>((set, get) => ({
   activeChallengeId: null,
   completedChallengeIds: loadCompleted(),
   panelOpen: false,
-  startChallenge: (id) => set({ activeChallengeId: id, panelOpen: false }),
+  // Whether the ChallengeGhost overlay is currently shown — the lightbulb
+  // button in the HUD toggles this so a kid can hide the answer and test
+  // themselves. Always reset to visible when a (re)started, so it's never
+  // stuck hidden from a previous attempt.
+  hintVisible: true,
+  startChallenge: (id) => set({ activeChallengeId: id, panelOpen: false, hintVisible: true }),
   exitChallenge: () => set({ activeChallengeId: null }),
   completeChallenge: (id) => {
     if (get().completedChallengeIds.includes(id)) return
@@ -45,4 +52,5 @@ export const useChallengeStore = create<ChallengeState>((set, get) => ({
   },
   openPanel: () => set({ panelOpen: true }),
   closePanel: () => set({ panelOpen: false }),
+  toggleHint: () => set((state) => ({ hintVisible: !state.hintVisible })),
 }))

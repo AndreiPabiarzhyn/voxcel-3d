@@ -1,4 +1,5 @@
 import { ChallengePanel } from './features/challenges/ChallengePanel'
+import { HintButton } from './features/challenges/HintButton'
 import './App.css'
 import { Credit } from './features/editor/Credit'
 import { EditorHud } from './features/editor/EditorHud'
@@ -20,6 +21,7 @@ function App() {
       <SidePanel />
       <FileMenu />
       <ViewPresets />
+      <HintButton />
       <Credit />
       <ToastHost />
       <ChallengePanel />

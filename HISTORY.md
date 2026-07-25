@@ -1404,3 +1404,26 @@ hiccup, not a project issue. Cancelled it (`gh run cancel`) and
 re-triggered a fresh deploy via `gh workflow run deploy.yml`
 (`workflow_dispatch`, already wired up in `deploy.yml`), which completed
 normally on the retry.
+
+## 2026-07-25 — hint toggle button (lightbulb) for challenge mode
+
+Andrei asked for a top-center "lightbulb" button, visible only while a
+challenge is active, that shows/hides the ghost-overlay hint so a kid
+can test themselves without the answer key and bring it back if stuck.
+
+- `challengeStore.ts`: new `hintVisible` (default `true`) + `toggleHint()`.
+  Reset to `true` whenever a challenge (re)starts, so it's never stuck
+  hidden from a previous attempt.
+- `ChallengeGhost.tsx`: now also checks `hintVisible` before rendering
+  the ghost cubes — but the completion-detection `useEffect` (the one
+  that fires the "Готово!" toast) deliberately does **not** depend on it,
+  so hiding the hint doesn't also pause progress tracking.
+- New `HintButton.tsx` (`features/challenges/`), fixed top-center,
+  renders nothing unless `activeChallengeId` is set. Uses the Twemoji
+  lightbulb (💡, self-hosted under `src/assets/actionIcons/`, same
+  ES-import/content-hashing treatment as the toolbar icons) rather than
+  a monochrome icon, and lights up gold (`hud-button--active-gold`,
+  matching the existing "active" convention) while the hint is showing.
+- `npm run build` / `npm run lint` clean. Not visually verified by me —
+  please start a challenge and confirm the lightbulb appears, toggles
+  the ghost cubes, and disappears again once you leave the challenge.

@@ -27,6 +27,7 @@ export function ChallengeGhost() {
   const activeChallengeId = useChallengeStore((state) => state.activeChallengeId)
   const completedChallengeIds = useChallengeStore((state) => state.completedChallengeIds)
   const completeChallenge = useChallengeStore((state) => state.completeChallenge)
+  const hintVisible = useChallengeStore((state) => state.hintVisible)
   const voxels = useProjectStore((state) => state.voxels)
 
   const challenge = CHALLENGES.find((item) => item.id === activeChallengeId) ?? null
@@ -34,6 +35,8 @@ export function ChallengeGhost() {
     ? getChallengeProgress(challenge, voxels)
     : { filled: 0, total: 0 }
 
+  // Completion tracking stays live even with the hint hidden — the
+  // lightbulb button only toggles whether the ghost cubes *render*.
   useEffect(() => {
     if (!challenge || total === 0) return
     if (filled === total && !completedChallengeIds.includes(challenge.id)) {
@@ -43,7 +46,7 @@ export function ChallengeGhost() {
     }
   }, [challenge, filled, total, completedChallengeIds, completeChallenge])
 
-  if (!challenge) return null
+  if (!challenge || !hintVisible) return null
 
   return (
     <group>
