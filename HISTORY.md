@@ -1629,3 +1629,26 @@ had silently stopped (nothing on port 5173, no vite process) — restarted
 it. Not visually/tactilely verified by me — no way to feel "smooth vs.
 janky" from here; please drag with right-click and confirm it actually
 feels better now.
+
+## 2026-07-25 — doubled ring on the language button
+
+Screenshot showed a doubled cyan ring around the globe button. Root
+cause: the button switched to `hud-button--active-cyan` (adds a cyan
+`border-color`) while open, and separately every `.hud-button` already
+has a `:focus-visible` rule (2px cyan outline, 2px offset) for keyboard
+accessibility — with the border now also cyan, both rings became
+visible at once, sitting right next to each other. Every other toggle
+button that uses `--active-cyan` (the active tool in the toolbar, etc.)
+keeps that state for as long as it's the current selection, so the same
+doubling risk exists there too but is far less likely to be *seen* since
+focus rarely lingers on them — this button uniquely keeps focus right
+after the click that opens its own popover.
+
+Fix: dropped the `--active-cyan` class switch on this button entirely —
+the popover being open is already the visible "this is active" signal,
+so the button itself doesn't need its own color change too. Simpler and
+guaranteed to remove the doubling rather than fighting the two rules
+against each other.
+
+`npm run build` / `npm run lint` clean. Not visually re-verified by me —
+please confirm the ring is gone now.

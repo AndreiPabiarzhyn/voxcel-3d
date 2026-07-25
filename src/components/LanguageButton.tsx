@@ -46,7 +46,7 @@ export function LanguageButton() {
         <button
           ref={buttonRef}
           type="button"
-          className={open ? 'hud-button hud-button--active-cyan' : 'hud-button'}
+          className="hud-button"
           onClick={toggleOpen}
           aria-label={t.language.buttonLabel}
           aria-pressed={open}
