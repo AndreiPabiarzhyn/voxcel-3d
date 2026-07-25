@@ -888,3 +888,54 @@ sharply ("ублюдочный вариант"). Root cause, not a styling tweak
   reading source per [[design-approach]].
 - `npm run build` clean. Not visually re-verified by me — please check the
   dialog is actually centered now and the new toolbar button reads clearly.
+
+## 2026-07-25 — GitHub repo, README, GitHub Pages deploy
+
+Andrei asked to get this onto GitHub with a real README and a live deploy.
+
+- **Repo:** created `AndreiPabiarzhyn/voxcel-3d` (public, matches his other
+  portfolio repos' convention), pushed the initial commit (74 files) via
+  `gh repo create --source=. --push`.
+- **README.md** replaced (was still the unedited Vite template) with a real
+  one: what the app is, feature list, tech stack, dev commands, deploy note,
+  credit line, live-site link.
+- **GitHub Pages via Actions** (`.github/workflows/deploy.yml`): builds on
+  every push to `master` and publishes `dist/` using the official
+  `actions/upload-pages-artifact` + `actions/deploy-pages`. Enabled Pages on
+  the repo itself with `build_type: workflow` via `gh api`.
+- **Base-path bugs this surfaced** — a project Pages site is served at
+  `/voxcel-3d/`, not domain root, and that broke things a plain root deploy
+  wouldn't have:
+  - `vite.config.ts` needed `base: '/voxcel-3d/'`. Vite's own asset
+    pipeline (index.html `<link>`/`<script>` tags, CSS `url()` refs like the
+    self-hosted font `@font-face` rules) gets this rewritten automatically —
+    verified by inspecting the built `dist/index.html` and CSS directly
+    rather than assuming.
+  - What Vite does **not** rewrite: plain runtime string literals passed to
+    things like `<img src>`. The three challenge icon paths
+    (`/icons/challenges/*.svg`, added earlier this session) were hardcoded
+    absolute paths and would have 404'd in production while working fine
+    in local dev — classic "works on my machine" trap. Fixed by building
+    them from `import.meta.env.BASE_URL` instead (verified the built JS
+    bundle actually contains `/voxcel-3d/icons/challenges/` baked in).
+  - `public/manifest.json`'s `start_url` and icon `src` fields were also
+    root-absolute (`/`, `/icon-192.png`); fixed to relative (`.`,
+    `icon-192.png`) so they resolve against the manifest's own URL
+    regardless of what path prefix it's served under — more robust than
+    hardcoding the repo name a second time.
+  - Also means local `npm run dev` now serves at
+    `http://localhost:5173/voxcel-3d/`, not `/` — root now 302-redirects
+    there. Worth remembering next time the dev server is opened.
+- **CI lockfile fix**: first deploy run failed — `npm ci` on the Linux
+  runner rejected `package-lock.json` as out of sync (`EUSAGE`, missing
+  `@emnapi/*` entries, `sharp`'s optional cross-platform deps that hadn't
+  made it into the lockfile committed from local Windows installs). Fixed
+  by a full `rm -rf node_modules package-lock.json && npm install` to
+  regenerate a complete lockfile, committed separately, re-ran clean.
+- **Verified this one live**, not just by reasoning: confirmed the deploy
+  workflow run succeeded (`gh run list`/`gh run view`), then `curl`-checked
+  the actual production URL and every category of asset (HTML, JS, CSS,
+  font, challenge icon, manifest) for a real 200 — all green.
+
+**Live:** https://andreipabiarzhyn.github.io/voxcel-3d/
+**Repo:** https://github.com/AndreiPabiarzhyn/voxcel-3d
