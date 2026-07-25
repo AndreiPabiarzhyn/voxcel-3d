@@ -184,3 +184,9 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     set({ showWelcome: false })
   },
 }))
+
+/** Shared `useProjectStore(selectHasVoxels)` selector — whether there's
+ * anything on the grid worth confirming before a destructive action
+ * (clear-all, starting a challenge). Kept in one place so the two
+ * call sites can't drift into subtly different "empty" checks. */
+export const selectHasVoxels = (state: ProjectState) => Object.keys(state.voxels).length > 0

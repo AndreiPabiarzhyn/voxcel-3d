@@ -1427,3 +1427,60 @@ can test themselves without the answer key and bring it back if stuck.
 - `npm run build` / `npm run lint` clean. Not visually verified by me —
   please start a challenge and confirm the lightbulb appears, toggles
   the ghost cubes, and disappears again once you leave the challenge.
+
+## 2026-07-25 — hygiene pass
+
+Andrei asked for a tech-debt/hygiene check after a long run of rapid
+iterative changes. Went through the codebase looking specifically for
+drift the fast pace could plausibly have left behind, found and fixed
+four concrete things, and identified a few bigger ones worth a
+deliberate decision rather than a silent fix:
+
+**Fixed:**
+- `features/editor/icons.tsx` had a stale comment claiming the action
+  icons were "self-hosted under public/icons/actions/" and read via a
+  `BASE_URL` string — that description described how they worked
+  *before* the caching fix a few turns back moved them to
+  `src/assets/actionIcons/` as ES imports. Corrected it; a wrong comment
+  is worse than no comment.
+- `hud.css` had `.chip`, `.chip--gold`, `.chip--success` — ~20 lines of
+  CSS with zero remaining usages anywhere (`grep` confirmed), left over
+  from the challenge-panel redesign that replaced them with the
+  icon-badge/corner-checkmark pattern. Deleted.
+- `hasVoxels` (whether the grid has anything worth confirming before a
+  destructive action) was computed independently, slightly differently,
+  in both `ChallengePanel.tsx` and `SidePanel.tsx`. Extracted a single
+  `selectHasVoxels` selector in `projectStore.ts` and pointed both at it
+  — one definition of "empty" instead of two that could quietly drift.
+- The challenge-card icons (house/tree/amongus) were still sitting in
+  `public/icons/challenges/`, referenced by a `BASE_URL`-built string —
+  exactly the same stale-cache class of bug fixed for the toolbar action
+  icons two sessions ago, just never extended here. Moved them to
+  `src/assets/challengeIcons/` as ES imports too, for the same reason
+  (Vite content-hashes them; all three ended up small enough to inline
+  as base64 directly in the JS bundle, confirmed via grep on the built
+  output). Also deleted the now-empty `public/icons/` directory entirely
+  — nothing under `public/` references a raw icon path anymore, only
+  favicon/manifest/PWA icons and fonts remain there, which genuinely
+  need stable public URLs.
+
+**Flagged, not changed (bigger, worth a deliberate yes/no rather than a
+silent edit):**
+- No `strict: true` in `tsconfig.app.json` — only a partial set
+  (`noUnusedLocals`, `noUnusedParameters`, `noFallthroughCasesInSwitch`).
+  Full strict mode (`strictNullChecks`, `noImplicitAny`, etc.) usually
+  pays for itself, but turning it on could surface an unknown number of
+  existing errors across the whole codebase — a scoped decision, not a
+  drive-by fix.
+- Oxlint isn't running in type-aware mode — the project's own
+  auto-generated README already suggests enabling `typeAware: true` +
+  `oxlint-tsgolint` as an optional upgrade; never acted on.
+- Zero automated tests anywhere in the project. Reasonable for how fast
+  this has moved so far, but worth naming plainly rather than leaving
+  implicit.
+- Vite warns on every build that the main JS chunk is >500kB minified
+  (~340kB gzipped) — inherent to bundling Three.js + R3F + drei with no
+  route-based code-splitting opportunity in a single-view app. Flagging
+  for awareness, not treating as urgent.
+
+`npm run build` / `npm run lint` clean after the fixes.

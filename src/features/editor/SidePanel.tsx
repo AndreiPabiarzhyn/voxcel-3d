@@ -4,12 +4,12 @@ import { ConfirmDialog } from '../../components/ConfirmDialog'
 import { Tooltip } from '../../components/Tooltip'
 import { ChallengesButton } from '../challenges/ChallengesButton'
 import { useToastStore } from '../../lib/toast/toastStore'
-import { useProjectStore } from '../../store/projectStore'
+import { selectHasVoxels, useProjectStore } from '../../store/projectStore'
 import { Palette } from './Palette'
 import './SidePanel.css'
 
 export function SidePanel() {
-  const hasVoxels = useProjectStore((state) => Object.keys(state.voxels).length > 0)
+  const hasVoxels = useProjectStore(selectHasVoxels)
   const [confirmingClear, setConfirmingClear] = useState(false)
 
   function handleClearAll() {

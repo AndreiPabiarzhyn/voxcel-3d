@@ -18,7 +18,8 @@ export {
 } from 'lucide-react'
 
 // Place/paint/erase/undo/redo/clear/challenge all moved to full-color
-// illustrated SVGs (Twemoji-derived, self-hosted under
-// public/icons/actions/) instead of monochrome Lucide glyphs — those read
-// noticeably faster for 6-10 y/o kids than a line icon. See each caller's
-// `${import.meta.env.BASE_URL}icons/actions/*.svg` reference.
+// illustrated SVGs (Twemoji-derived) instead of monochrome Lucide glyphs
+// — those read noticeably faster for 6-10 y/o kids than a line icon.
+// They live under src/assets/actionIcons/ and are pulled in with a plain
+// ES `import` (see each caller), not a public/ URL — that's what lets
+// Vite content-hash them so a redeploy can't serve a stale cached icon.

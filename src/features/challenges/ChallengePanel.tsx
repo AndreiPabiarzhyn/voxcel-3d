@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { ConfirmDialog } from '../../components/ConfirmDialog'
 import { downloadProjectFile } from '../../lib/storage/exportProjectFile'
 import { useToastStore } from '../../lib/toast/toastStore'
-import { useProjectStore } from '../../store/projectStore'
+import { selectHasVoxels, useProjectStore } from '../../store/projectStore'
 import { CloseIcon, CompletedIcon } from '../editor/icons'
 import { CHALLENGES } from './challengeData'
 import './ChallengePanel.css'
@@ -17,11 +17,10 @@ export function ChallengePanel() {
   const exitChallenge = useChallengeStore((state) => state.exitChallenge)
   const closePanel = useChallengeStore((state) => state.closePanel)
   const voxels = useProjectStore((state) => state.voxels)
+  const hasVoxels = useProjectStore(selectHasVoxels)
   const [pendingChallengeId, setPendingChallengeId] = useState<string | null>(null)
 
   if (!panelOpen) return null
-
-  const hasVoxels = Object.keys(voxels).length > 0
 
   function beginChallenge(id: string) {
     useProjectStore.getState().clearVoxels()

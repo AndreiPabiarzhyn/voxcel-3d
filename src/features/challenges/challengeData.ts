@@ -1,3 +1,6 @@
+import amongusIcon from '../../assets/challengeIcons/amongus.svg'
+import houseIcon from '../../assets/challengeIcons/house.svg'
+import treeIcon from '../../assets/challengeIcons/tree.svg'
 import { voxelKey } from '../../lib/voxel/key'
 import type { VoxelData, VoxelKey } from '../../types/project'
 
@@ -108,18 +111,12 @@ function buildAmongUs(): Record<VoxelKey, VoxelData> {
   return target
 }
 
-// import.meta.env.BASE_URL, not a hardcoded leading slash: this app is
-// deployed as a GitHub Pages *project* site (/voxcel-3d/, not domain root),
-// so a literal '/icons/...' string would 404 in production while working
-// fine in local dev — BASE_URL resolves to the right prefix in both.
-const ICON_BASE = import.meta.env.BASE_URL + 'icons/challenges/'
-
 export const CHALLENGES: Challenge[] = [
   {
     id: 'house',
     title: 'Домик',
     hint: 'Собери домик с дверью, окнами и крышей',
-    icon: `${ICON_BASE}house.svg`,
+    icon: houseIcon,
     accent: 'gold',
     target: buildHouse(),
   },
@@ -127,7 +124,7 @@ export const CHALLENGES: Challenge[] = [
     id: 'tree',
     title: 'Ёлочка',
     hint: 'Собери пушистую ёлочку',
-    icon: `${ICON_BASE}tree.svg`,
+    icon: treeIcon,
     accent: 'leaf',
     target: buildTree(),
   },
@@ -135,7 +132,7 @@ export const CHALLENGES: Challenge[] = [
     id: 'amongus',
     title: 'Амогус',
     hint: 'Собери персонажа из Among Us',
-    icon: `${ICON_BASE}amongus.svg`,
+    icon: amongusIcon,
     accent: 'coral',
     target: buildAmongUs(),
   },
