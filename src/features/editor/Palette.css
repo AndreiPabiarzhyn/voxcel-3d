@@ -1,7 +1,6 @@
 .palette {
-  display: flex;
-  flex-wrap: nowrap;
-  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 36px);
   gap: 8px;
 }
 

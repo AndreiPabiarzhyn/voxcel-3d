@@ -3,6 +3,7 @@ import './App.css'
 import { Credit } from './features/editor/Credit'
 import { EditorHud } from './features/editor/EditorHud'
 import { FileMenu } from './features/editor/FileMenu'
+import { SidePanel } from './features/editor/SidePanel'
 import { ToastHost } from './features/editor/ToastHost'
 import { useHistoryShortcuts } from './features/editor/useHistoryShortcuts'
 import { ViewPresets } from './features/editor/ViewPresets'
@@ -15,6 +16,7 @@ function App() {
     <div className="app">
       <Scene />
       <EditorHud />
+      <SidePanel />
       <FileMenu />
       <ViewPresets />
       <Credit />

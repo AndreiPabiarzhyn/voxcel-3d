@@ -6,13 +6,6 @@
 // callers stay readable if the underlying icon ever changes.
 export {
   Camera as ScreenshotIcon, // a real camera — "take a picture of this"
-  Blocks as PlaceIcon, // two joined blocks — "place a block", not just "a cube"
-  PaintBucket as PaintIcon, // tilting bucket + drip — the universal "fill/recolor" icon,
-  // and the exact metaphor MS Paint/Paint 3D/Scratch already taught this age group
-  Eraser as EraseIcon, // a real eraser silhouette with the diagonal "worn corner" cut
-  Trash2 as ClearAllIcon, // trash can — "throw away everything on the grid"
-  Undo2 as UndoIcon, // hooked arrow — standard undo
-  Redo2 as RedoIcon, // mirror of Undo2
   Download as DownloadIcon, // arrow into a tray — save/export a file
   FolderOpen as FolderIcon, // open folder — load a file
   Box as ExportModelIcon, // labeled 3D cube — "this becomes a 3D model file"
@@ -20,7 +13,12 @@ export {
   House as HomeIcon, // reset the camera to its starting view
   Eye as FrontViewIcon, // "look straight at it" — front view
   Grid3x3 as TopViewIcon, // floor grid seen flat — straight-down view
-  Target as ChallengesIcon, // a bullseye — "here's a goal to aim for"
   CheckCircle2 as CompletedIcon, // filled checkmark badge — challenge already done
   X as CloseIcon, // close the challenge panel
 } from 'lucide-react'
+
+// Place/paint/erase/undo/redo/clear/challenge all moved to full-color
+// illustrated SVGs (Twemoji-derived, self-hosted under
+// public/icons/actions/) instead of monochrome Lucide glyphs — those read
+// noticeably faster for 6-10 y/o kids than a line icon. See each caller's
+// `${import.meta.env.BASE_URL}icons/actions/*.svg` reference.

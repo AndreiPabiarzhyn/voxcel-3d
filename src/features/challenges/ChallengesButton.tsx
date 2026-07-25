@@ -1,5 +1,6 @@
-import { ChallengesIcon } from '../editor/icons'
 import { useChallengeStore } from './challengeStore'
+
+const CHALLENGE_ICON = `${import.meta.env.BASE_URL}icons/actions/challenge.svg`
 
 export function ChallengesButton() {
   const activeChallengeId = useChallengeStore((state) => state.activeChallengeId)
@@ -13,7 +14,7 @@ export function ChallengesButton() {
       aria-label="Задания"
       title="Задания"
     >
-      <ChallengesIcon size={24} />
+      <img className="hud-button__icon" src={CHALLENGE_ICON} alt="" />
     </button>
   )
 }

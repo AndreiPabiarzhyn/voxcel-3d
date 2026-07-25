@@ -939,3 +939,59 @@ Andrei asked to get this onto GitHub with a real README and a live deploy.
 
 **Live:** https://andreipabiarzhyn.github.io/voxcel-3d/
 **Repo:** https://github.com/AndreiPabiarzhyn/voxcel-3d
+
+## 2026-07-25 — layout split (bottom = core tools only, left = colors/challenge/clear) + colorful action icons
+
+Andrei's message started with a keyboard-layout-garbled line again (typed
+in Cyrillic while the OS layout was Latin) — decoded the same way as
+before, key-by-key ЙЦУКЕН↔QWERTY: "ckeifq/ lfdfq hfpytctv ytvyjuj
+bycnhevtyns/" → "слушай, давай разнесём немного инструменты" (listen,
+let's spread the tools out a bit). Followed by plain-text instructions:
+bottom bar should hold only the core actions (place/paint/erase/undo-redo),
+the left side should get color picker + challenge + clear-all, and the
+toolbar/challenge icons still needed to become real colorful pictures (the
+challenge button specifically called out as "unclear").
+
+**Layout split:**
+- `EditorHud` (bottom-center) now wraps *only* `Toolbar` — place/paint/
+  erase, divider, undo/redo. Nothing else.
+- New `SidePanel` (`src/features/editor/SidePanel.tsx` + `.css`), fixed to
+  the left edge and vertically centered (`top: 50%`, own scroll if the
+  viewport is too short) — holds `Palette`, a divider, `ChallengesButton`,
+  and a new "Стереть всё" button (moved out of `Toolbar`, unchanged
+  `clearVoxels()` behavior/confirm dialog from the previous session).
+  `Palette` switched from a horizontal scrolling row to a 2-column CSS grid
+  since it's a vertical panel now.
+- Added `.hud-panel--column` and `.hud-divider--h` utilities to `hud.css`
+  so a panel can be laid out vertically using the same shared primitives
+  instead of a bespoke one-off.
+
+**Colorful action icons** — same reasoning as the challenge badges: a
+6-10 y/o reads a real colored picture faster than a grey stroke glyph.
+Downloaded more Twemoji SVGs (self-hosted, `public/icons/actions/`),
+inspected each one's actual fill colors before choosing it (not guessed
+from the name):
+  - place → 🧱 brick (reddish isometric block stack)
+  - paint → 🖌️ paintbrush (blue bristle tip, wood handle)
+  - erase → 🧽 sponge (yellow/orange, bubbly texture)
+  - clear all → 🗑️ wastebasket (the one icon that's mostly grey/white in
+    Twemoji's own palette — kept anyway since no better *colorful* emoji
+    maps to "empty the whole grid" as unambiguously)
+  - challenge button → 🎯 dartboard+arrow (red/white rings, blue arrow) —
+    directly answers "channel icon unclear": a bullseye-with-dart reads as
+    "goal/challenge" far faster than Lucide's plain outline `Target`
+  - undo/redo → the Unicode "leftwards/rightwards arrow with hook"
+    (↩️/↪️) Twemoji glyphs turned out to already be small blue rounded-
+    square badges with a white hooked arrow — i.e. Twemoji ships these as
+    a colored icon, not a bare glyph, so no separate custom badge
+    treatment was needed.
+- Removed the now-unused Lucide re-exports (`PlaceIcon`, `PaintIcon`,
+  `EraseIcon`, `ClearAllIcon`, `UndoIcon`, `RedoIcon`, `ChallengesIcon`)
+  from `features/editor/icons.tsx` — confirmed unused via grep before
+  deleting, not assumed.
+- `npm run build` and `npm run lint` (oxlint) both clean.
+- Verified every new icon file actually resolves with a 200 on the running
+  dev server (`/voxcel-3d/icons/actions/*.svg`). **Layout/visual result
+  itself not verified by me** — no screenshot tool here; please look at the
+  new left panel and bottom bar and confirm the split reads right and
+  nothing overlaps at your window size.
