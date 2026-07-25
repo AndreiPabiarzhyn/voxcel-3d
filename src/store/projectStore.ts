@@ -1,6 +1,7 @@
 import { create } from 'zustand'
-import { loadProjectFromLocalStorage } from '../lib/storage/localProject'
+import { loadProjectFromLocalStorage, saveProjectToLocalStorage } from '../lib/storage/localProject'
 import { voxelKey } from '../lib/voxel/key'
+import { buildStarterPig } from '../lib/voxel/starterPig'
 import type { VoxelData, VoxelKey, VoxelProject } from '../types/project'
 
 const DEFAULT_GRID_SIZE = 12
@@ -31,20 +32,14 @@ interface ProjectState {
   loadProject: (project: VoxelProject) => void
   newProject: () => void
   clearVoxels: () => void
+  showWelcome: boolean
+  keepStarterPig: () => void
+  dismissStarterPig: () => void
 }
 
 function createId() {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID()
   return `${Date.now()}-${Math.random().toString(36).slice(2)}`
-}
-
-function seedVoxels(): Record<VoxelKey, VoxelData> {
-  const colors = ['#ff5c5c', '#5c8dff', '#5cff8d']
-  const voxels: Record<VoxelKey, VoxelData> = {}
-  colors.forEach((color, i) => {
-    voxels[voxelKey(i, 0, 0)] = { color }
-  })
-  return voxels
 }
 
 function inBounds(gridSize: number, x: number, y: number, z: number) {
@@ -66,7 +61,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   projectName: savedProject?.name ?? DEFAULT_PROJECT_NAME,
   createdAt: savedProject?.createdAt ?? Date.now(),
   gridSize: savedProject?.gridSize ?? DEFAULT_GRID_SIZE,
-  voxels: savedProject?.voxels ?? seedVoxels(),
+  voxels: savedProject?.voxels ?? buildStarterPig(),
   selectedColor: '#ff5c5c',
   tool: 'place',
   past: [],
@@ -170,4 +165,22 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       if (Object.keys(state.voxels).length === 0) return state
       return { past: pushHistory(state.past, state.voxels), future: [], voxels: {} }
     }),
+
+  // Only true on a genuinely fresh visit (nothing in localStorage yet) —
+  // see WelcomeModal. Whichever way it's answered, the resulting project
+  // is saved immediately: autosave only fires on the *next* edit, and
+  // without an explicit save here "keep the pig" would silently ask again
+  // on every reload until the player happened to place a block.
+  showWelcome: savedProject === null,
+
+  keepStarterPig: () => {
+    saveProjectToLocalStorage(get().toProject())
+    set({ showWelcome: false })
+  },
+
+  dismissStarterPig: () => {
+    get().newProject()
+    saveProjectToLocalStorage(get().toProject())
+    set({ showWelcome: false })
+  },
 }))

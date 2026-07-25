@@ -7,6 +7,7 @@ import { SidePanel } from './features/editor/SidePanel'
 import { ToastHost } from './features/editor/ToastHost'
 import { useHistoryShortcuts } from './features/editor/useHistoryShortcuts'
 import { ViewPresets } from './features/editor/ViewPresets'
+import { WelcomeModal } from './features/editor/WelcomeModal'
 import { Scene } from './scene/Scene'
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
       <Credit />
       <ToastHost />
       <ChallengePanel />
+      <WelcomeModal />
     </div>
   )
 }

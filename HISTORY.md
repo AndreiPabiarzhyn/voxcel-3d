@@ -1183,3 +1183,54 @@ tooltips there while every other button got the custom styled one.
   — please check the top-row view-preset tooltips now appear below the
   buttons instead of getting cut off, and that hovering a color swatch
   now shows the same styled tooltip as everything else.
+
+## 2026-07-25 — starter pig build + "keep it or start fresh" welcome modal
+
+Andrei asked for a proper starting build instead of the old 3-cube demo:
+a low-poly Minecraft-style pig standing ready on launch, plus a modal
+asking whether to keep it or start blank — keep → pig stays as the
+project; new → empty grid. Increase the grid only if the pig actually
+needs more room.
+
+- **`src/lib/voxel/starterPig.ts`** (new) — `buildStarterPig()`, built the
+  same way the challenge shapes are (a small box-fill helper + hand-picked
+  coordinates, not anything generated): 4 legs, a body, a head, two ears,
+  a small darker-pink snout nub on the lower face, and a tail. Two colors
+  total (`#f2a9c3` body pink, `#e087a8` snout pink) — no attempt at
+  texture-level detail like eyes, since at this voxel resolution a single
+  flat-colored cube for an eye wouldn't read as an eye, just as a stray
+  block. Silhouette (legs + boxy body/head + snout nub) is what carries
+  "pig" here, same principle the house/tree/mushroom challenge shapes
+  already lean on.
+- **Grid size:** computed the pig's bounding box before touching
+  anything — 5 wide × 5 tall × 10 long — and it centers perfectly inside
+  the existing default 12×12×12 grid (x 4-7, y 0-4, z 1-10, all within
+  0-11) with room to spare. Left `DEFAULT_GRID_SIZE` at 12, unchanged —
+  enlarging it wasn't actually needed, and bumping it would have nudged
+  the already-centered challenge shapes (house/tree/mushroom, centered
+  via their own hardcoded offsets assuming a 12-wide grid) slightly
+  off-center for no real benefit.
+- **`projectStore.ts`**: `seedVoxels()` (the old 3-cube demo) replaced by
+  `buildStarterPig()` as the fallback when there's no autosaved project
+  yet. Added `showWelcome` (true only when `loadProjectFromLocalStorage()`
+  returned `null` — i.e. a genuinely fresh visit) plus two actions:
+  `keepStarterPig()` and `dismissStarterPig()` (the latter calls the
+  existing `newProject()` then saves). Both explicitly call
+  `saveProjectToLocalStorage()` immediately — autosave only fires on the
+  *next* edit, so without this, choosing "keep the pig" wouldn't actually
+  persist anything and the same welcome modal would silently reappear on
+  every reload until the player happened to place a block.
+- **`WelcomeModal.tsx`** (new) — reuses the existing `ConfirmDialog`
+  rather than building a new dialog shell: title "Привет! 🐷", explains the
+  pig, "Оставить свинку" (ghost button, keeps it) vs "Новый проект"
+  (the coral/danger button — it does discard the free starter content,
+  so the existing destructive-action styling fits). Mounted once in
+  `App.tsx`.
+- `npm run build` / `npm run lint` clean.
+- **Testing note for Andrei**: this only triggers on a *genuinely* empty
+  `localStorage` — the browser tab already open from this session almost
+  certainly autosaved a project earlier today, so reloading it won't show
+  the pig or the modal. Use a private/incognito window (or clear
+  `localStorage` for the site in devtools) to see the actual first-visit
+  experience. Not visually verified by me for the same reason — no
+  browser tool here, and no way to simulate "empty localStorage" myself.
