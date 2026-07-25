@@ -1583,3 +1583,49 @@ Not visually verified by me — no browser tool here. Please click through
 each of the 8 languages and confirm the picker itself, every tooltip,
 every toast, and the challenge panel all read correctly, and that the
 popover no longer clips off the right edge.
+
+## 2026-07-25 — smoother right-click camera pan; bug-hunt pass
+
+Andrei asked for a bug check across "all tests" and specifically flagged
+that right-click camera panning felt laggy and a bit jittery.
+
+**No automated test suite exists** (already flagged in the earlier
+hygiene pass) — there's nothing to literally "run." Did a manual
+code-level review pass instead, focused on the areas with the most
+recent churn (the i18n wiring and the camera code, both from this
+session) since that's where a regression would most likely be hiding.
+Re-checked: `ConfirmDialog`'s now-required `cancelLabel` against every
+call site, the `LanguageButton` click-outside-to-close logic against its
+own open/close button click (no double-toggle), `ChallengeGhost`'s
+`{{title}}` interpolation, and the challenge-save-prompt flow. Nothing
+new turned up beyond what the camera fix below addresses.
+
+**Root-caused the camera pan feel, not just tweaked numbers.** The
+right-click pan handler (`CameraRig.tsx`) mutated `camera.position` and
+called `controls.update()` directly inside the raw `pointermove` DOM
+event handler. Two real problems with that:
+- `pointermove` can fire more often than the screen actually repaints
+  (well within normal range for a 125Hz+ mouse against a 60Hz display) —
+  applying every single event immediately meant some of those updates
+  were silently overwritten before a frame ever displayed them, moving
+  the camera in uneven little increments instead of one smooth motion.
+- Every event allocated three fresh `THREE.Vector3` instances
+  (`right`, `up`, `drift`). Harmless once, but dozens of times a second
+  during a drag it's real GC pressure — exactly the kind of thing that
+  shows up as periodic micro-stutter on anything but a fast machine.
+
+Fixed both: pointer deltas now accumulate into a ref instead of being
+applied immediately, and a single `useFrame` callback applies the
+accumulated total once per rendered frame — ties the pan's update rate
+exactly to the render rate instead of the uneven rate raw input events
+happen to arrive at. The four vectors involved (`right`, `up`, the
+combined `offset`, and the drift-clamp vector) are now reused `useRef`
+scratch objects instead of freshly allocated every call. Logic is
+otherwise unchanged — same 1:1 screen-to-world pan scale, same
+`PAN_RANGE` drift clamp keeping a kid from dragging the build off-screen.
+
+`npm run build` / `npm run lint` clean. Also found the dev server itself
+had silently stopped (nothing on port 5173, no vite process) — restarted
+it. Not visually/tactilely verified by me — no way to feel "smooth vs.
+janky" from here; please drag with right-click and confirm it actually
+feels better now.

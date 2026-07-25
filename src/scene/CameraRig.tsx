@@ -1,5 +1,5 @@
 import { OrbitControls } from '@react-three/drei'
-import { useThree } from '@react-three/fiber'
+import { useFrame, useThree } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
@@ -38,6 +38,27 @@ export function CameraRig({ center }: CameraRigProps) {
   const controlsRef = useRef<OrbitControlsImpl>(null)
   const { camera, gl } = useThree()
 
+  // Raw pointer deltas accumulate here between rendered frames instead
+  // of being applied immediately inside the pointermove handler.
+  // pointermove can fire more often than the screen actually repaints
+  // (comfortably true on a 125Hz+ mouse against a 60Hz display) — applying
+  // every single event moved the camera in uneven little jumps (some
+  // updates got overwritten before a frame ever showed them) and felt
+  // both laggy and jittery. Coalescing to exactly one update per
+  // useFrame tick ties the pan directly to the render cadence.
+  const pendingDelta = useRef({ x: 0, y: 0 })
+  const dragging = useRef(false)
+  const startTarget = useRef(new THREE.Vector3())
+
+  // Scratch vectors, reused every frame instead of freshly allocated —
+  // this runs dozens of times a second while dragging, and `new
+  // THREE.Vector3()` in that hot path is real enough GC pressure to show
+  // up as stutter on modest hardware.
+  const rightVec = useRef(new THREE.Vector3())
+  const upVec = useRef(new THREE.Vector3())
+  const offsetVec = useRef(new THREE.Vector3())
+  const driftVec = useRef(new THREE.Vector3())
+
   useEffect(() => {
     const dom = gl.domElement
     const controls = controlsRef.current
@@ -49,60 +70,30 @@ export function CameraRig({ center }: CameraRigProps) {
     registerCamera(camera, controls)
     registerCanvas(dom)
 
-    const startTarget = new THREE.Vector3()
-    let dragging = false
     let lastX = 0
     let lastY = 0
 
     function onPointerDown(event: PointerEvent) {
       if (event.button !== 2 || !controlsRef.current) return
-      dragging = true
+      dragging.current = true
       lastX = event.clientX
       lastY = event.clientY
-      startTarget.copy(controlsRef.current.target)
+      pendingDelta.current.x = 0
+      pendingDelta.current.y = 0
+      startTarget.current.copy(controlsRef.current.target)
       dom.setPointerCapture(event.pointerId)
     }
 
     function onPointerMove(event: PointerEvent) {
-      const controls = controlsRef.current
-      if (!dragging || !controls) return
-
-      const deltaX = event.clientX - lastX
-      const deltaY = event.clientY - lastY
+      if (!dragging.current) return
+      pendingDelta.current.x += event.clientX - lastX
+      pendingDelta.current.y += event.clientY - lastY
       lastX = event.clientX
       lastY = event.clientY
-      if (deltaX === 0 && deltaY === 0) return
-
-      // Same screen-space-to-world scale OrbitControls uses for panning,
-      // so the drag feels 1:1 regardless of zoom level.
-      const targetDistance = camera.position.distanceTo(controls.target)
-      const fov = camera instanceof THREE.PerspectiveCamera ? camera.fov : 45
-      const panScale =
-        (2 * targetDistance * Math.tan((fov * Math.PI) / 360)) / dom.clientHeight
-
-      const right = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 0)
-      const up = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 1)
-      const offset = right
-        .multiplyScalar(-deltaX * panScale)
-        .add(up.multiplyScalar(deltaY * panScale))
-
-      camera.position.add(offset)
-      controls.target.add(offset)
-
-      // Pull back if this drag has pushed the target too far from start.
-      const drift = new THREE.Vector3().subVectors(controls.target, startTarget)
-      const distance = drift.length()
-      if (distance > PAN_RANGE) {
-        const excess = drift.multiplyScalar(1 - PAN_RANGE / distance)
-        controls.target.sub(excess)
-        camera.position.sub(excess)
-      }
-
-      controls.update()
     }
 
     function stopDragging() {
-      dragging = false
+      dragging.current = false
     }
 
     function onContextMenu(event: MouseEvent) {
@@ -125,6 +116,45 @@ export function CameraRig({ center }: CameraRigProps) {
       dom.removeEventListener('contextmenu', onContextMenu)
     }
   }, [camera, gl, center])
+
+  useFrame(() => {
+    const controls = controlsRef.current
+    if (!dragging.current || !controls) return
+
+    const deltaX = pendingDelta.current.x
+    const deltaY = pendingDelta.current.y
+    if (deltaX === 0 && deltaY === 0) return
+    pendingDelta.current.x = 0
+    pendingDelta.current.y = 0
+
+    // Same screen-space-to-world scale OrbitControls uses for panning,
+    // so the drag feels 1:1 regardless of zoom level.
+    const targetDistance = camera.position.distanceTo(controls.target)
+    const fov = camera instanceof THREE.PerspectiveCamera ? camera.fov : 45
+    const panScale =
+      (2 * targetDistance * Math.tan((fov * Math.PI) / 360)) / gl.domElement.clientHeight
+
+    const right = rightVec.current.setFromMatrixColumn(camera.matrixWorld, 0)
+    const up = upVec.current.setFromMatrixColumn(camera.matrixWorld, 1)
+    const offset = offsetVec.current
+      .copy(right)
+      .multiplyScalar(-deltaX * panScale)
+      .addScaledVector(up, deltaY * panScale)
+
+    camera.position.add(offset)
+    controls.target.add(offset)
+
+    // Pull back if this drag has pushed the target too far from start.
+    const drift = driftVec.current.subVectors(controls.target, startTarget.current)
+    const distance = drift.length()
+    if (distance > PAN_RANGE) {
+      const excess = drift.multiplyScalar(1 - PAN_RANGE / distance)
+      controls.target.sub(excess)
+      camera.position.sub(excess)
+    }
+
+    controls.update()
+  })
 
   return (
     <OrbitControls
