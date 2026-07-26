@@ -1684,3 +1684,58 @@ information, not just redundant chrome).
 
 `npm run build` / `npm run lint` clean. Not visually re-verified by me —
 please confirm both buttons now show a single clean outline.
+
+## 2026-07-25 — security review
+
+Andrei asked for a security pass and a short report. This is a fully
+client-side, local-first, static-hosted app with no backend, no
+accounts, and no server-side attack surface at all — the review scope
+is really just "can this app hurt whoever's browser it's running in,"
+not the usual server/auth/API concerns.
+
+Checked: `npm audit` (0 vulnerabilities across 168 dependencies), grepped
+for `dangerouslySetInnerHTML`/`innerHTML`/`eval`/`new Function`/
+`document.write` (none anywhere), read the GitHub Actions deploy
+workflow for script-injection risk (clean — no untrusted
+`${{ github.event.* }}` interpolated into a `run:` step, permissions
+scoped to just `contents: read` / `pages: write` / `id-token: write`,
+only triggers on push-to-master + manual dispatch, not PRs), and traced
+how an imported `.voxcel` file's data actually flows into app state
+(worried about prototype pollution via a `__proto__` key riding in on
+`JSON.parse` — checked and it's not exploitable here: every voxel-object
+write goes through object *spread* with a programmatically-computed key
+`voxelKey(x,y,z)`, never a dynamic bracket-assignment of an
+attacker-controlled key name, which is the part that would actually be
+needed for pollution to occur).
+
+**Found and fixed one real bug** in the `.voxcel` file-import validation
+(`FileMenu.tsx`'s `isVoxelProject`): it only checked
+`typeof candidate.voxels === 'object'` — but `typeof null === 'object'`
+too, so a crafted or corrupted file with `voxels: null` passed
+validation and got loaded straight into app state. Every subsequent
+`Object.keys(state.voxels)` call (there are several — `selectHasVoxels`,
+`clearVoxels`, the challenge-progress check) would then throw, crashing
+the app the next time the player did almost anything. Also had no upper
+bound on `gridSize` or on how many voxel entries a file could contain —
+a huge crafted file could have frozen the tab trying to mount millions
+of meshes at once. Added an explicit non-null check plus sane caps
+(`gridSize` ≤ 256, ≤ 50,000 voxel entries) so a bad file gets rejected
+with the existing "not a valid .voxcel file" toast instead of crashing
+anything.
+
+This is self-inflicted-only in practice (nothing here lets one player's
+data affect another's — there's no shared/multiplayer state), but worth
+fixing regardless since builds do get shared as files between people
+("try opening this!"), and a corrupted file crashing the app on import
+is a real bug independent of any adversarial framing.
+
+**Not fixed, minor/optional:**
+- No Content-Security-Policy meta tag. Low value for a static site with
+  no user-generated *scripts* ever executed, but cheap to add if wanted.
+- GitHub Actions steps pin actions by major-version tag (`@v4`) rather
+  than a full commit SHA — standard practice, but tags are mutable in
+  principle; pinning to SHAs is the maximally-hardened option if that
+  matters for this project.
+
+`npm run build` / `npm run lint` clean. Restarted the dev server (it had
+stopped again).

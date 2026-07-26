@@ -12,10 +12,22 @@ import type { VoxelProject } from '../../types/project'
 import './FileMenu.css'
 import { DownloadIcon, ExportModelIcon, FolderIcon, NewProjectIcon, ScreenshotIcon } from './icons'
 
+// A hand-crafted or corrupted .voxcel file shouldn't be able to crash the
+// app or freeze the tab: `typeof null === 'object'` let a `voxels: null`
+// file through before (every later `Object.keys(voxels)` call would then
+// throw), and an unbounded voxel count let a huge file try to mount
+// millions of meshes at once.
+const MAX_IMPORTED_VOXELS = 50_000
+const MAX_IMPORTED_GRID_SIZE = 256
+
 function isVoxelProject(value: unknown): value is VoxelProject {
   if (!value || typeof value !== 'object') return false
   const candidate = value as Partial<VoxelProject>
-  return typeof candidate.gridSize === 'number' && typeof candidate.voxels === 'object'
+  if (typeof candidate.gridSize !== 'number' || !Number.isFinite(candidate.gridSize)) return false
+  if (candidate.gridSize <= 0 || candidate.gridSize > MAX_IMPORTED_GRID_SIZE) return false
+  if (typeof candidate.voxels !== 'object' || candidate.voxels === null) return false
+  if (Object.keys(candidate.voxels).length > MAX_IMPORTED_VOXELS) return false
+  return true
 }
 
 function handleScreenshot() {
